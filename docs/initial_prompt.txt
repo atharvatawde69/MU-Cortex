@@ -1,0 +1,58 @@
+asssume yourself as a product manager with 30+ years of experience in ai agents and multiagent systems and a good hold on approaching big projects
+Step 1: Onboarding & "Scheme" Locking
+User Action:
+1. The student visits the web app and signs up.
+2. The Choice: They must select their Branch (e.g., CS/IT), Semester, and Scheme (2019 C-Scheme or 2024 Revised).
+3. The Result: The app "locks" this context. Every future search or recommendation is now filtered strictly by this scheme.
+System Logic:
+* The Librarian Agent sets a global variable: SCHEME_ID.
+* It fetches the official MU syllabus PDF for that specific scheme and stores it in the user's session.
+Step 2: Topic Selection & The "Scout" Mission
+User Action:
+1. The student lands on a dashboard showing their current semester subjects.
+2. They click on a subject (e.g., Operating Systems) or type a specific topic (e.g., Deadlock Prevention).
+System Logic:
+1. The Scout Agent is triggered. It takes the topic and your "Gold Standard" channel list.
+2. It uses the YouTube API to find 10 videos specifically from those channels.
+3. It calculates the Engagement Score (Views + Comments) to rank them.
+4. Display: The student sees 10 video cards. Each card has a "Study Smart" tag:
+   * “Watch this for Theory (Gate Smashers)”
+   * “Watch this for Numericals (Jenny’s Lectures)”
+Step 3: The Community "Vault" (Telegram Sync)
+User Action:
+1. The student joins the linked Telegram channel.
+2. If they (or a senior) upload a PDF of handwritten notes or a PYQ paper, they simply tag it with the subject name.
+System Logic:
+1. The Ingestor Agent (Telegram Bot) detects the upload.
+2. It uses GPT-4o-mini Vision to "peek" at the file. If it sees "2019 Scheme" or "Dec 2023," it tags the file automatically.
+3. Instant Update: Back on the Web App, the "PYQ" and "Notes" section for that subject updates instantly for all students in that same scheme.
+Step 4: The "Master Answer" Generation
+User Action:
+1. The student clicks on a specific "Predicted Question" (e.g., "Explain Bankers Algorithm for 10 marks").
+2. They click a button: "Generate MU-Style Answer."
+System Logic:
+1. The Scribe Agent takes over. It pulls the YouTube Transcript of the top-ranked video and the Community Notes from the Telegram vault also use LLMs.
+2. It formats the answer using the MU Score-Max Pattern:
+   * Introduction: 2-3 lines.
+   * Diagram Suggestion: "Draw the process allocation graph here."
+   * Points: 12-15 bullet points with keywords in bold.
+   * Reasoning Card: "This question appeared 3 times in the last 5 years (Dec '21, May '22, Dec '23)."
+Step 5: The "Reality Check" Planner
+User Action:
+1. The student toggles "Survival Mode" and enters: "I have 2 days left."
+System Logic:
+1. The Planner Agent calculates the total syllabus vs. time.
+2. It hides low-probability topics and highlights only the "Pass-Guaranteed" modules (e.g., Module 1, 2, and 4).
+3. It generates a 48-hour schedule, including links to the specific 10 videos that cover these core marks.
+the Above is the workflow for my project idea, the files i have attached contains the agent description and the phases of my project i want you to guide me through is entire project i will be vibe coding the entire project i have a list of tech stack and you will help me use that stack efficiently and provide prompting tips for eah phase...we will start the project right away i want you to help be execute each phase one by one and also ask me questions if you have any doubt regarding the idea..i want you to ask questions to clear my intent before every phase so we dont face issues in the long run below is the tech stack i want to use
+MU-Cortex Tech Stack
+Component | Recommended Tool | Use Case in MU-Cortex
+Editor (The Brain) Cursor Used to “vibe code” the entire project. Its Composer mode allows writing logic across multiple files simultaneously.
+Frontend Next.js (React) The student dashboard. It handles the Scheme Toggle (2019/2024) and displays the 10 YouTube video cards.
+Backend FastAPI (Python) The Orchestrator. It runs the AI agents and handles requests from the web app to fetch videos or generate notes.
+Database Supabase Stores user profiles, syllabus PDFs, and The Vault (community notes). Uses PostgreSQL to filter 2019 vs. 2024 data.
+Agent Framework LangGraph Manages the workflow “steps”. Ensures the Scout Agent finishes finding videos before the Scribe Agent starts writing the answer.
+YouTube Logic YouTube Data API v3 Programmatically searches your Safe-List channels and pulls view/comment counts to rank the top 10 videos.
+Transcription Deepgram (Nova-3) Specifically chosen for Hinglish. Converts Mumbai professors’ lectures into high-accuracy text for the Scribe to process.
+Vision (OCR) GPT-4o-mini The Eyes of the system. Reads handwritten student notes from Telegram and extracts text into Markdown.
+Telegram Bot Aiogram 3 An asynchronous Python library that lets the Ingestor Agent listen to the group and download files 24/7. help me use this tech stack efficiently and guide me properly!!

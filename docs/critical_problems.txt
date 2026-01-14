@@ -1,0 +1,63 @@
+1. The Scheme Lock - Data Model Clarity
+You mention "locking" the scheme (2019/2024) at signup. But:
+
+Q1a: Are the syllabi for 2019 vs 2024 completely different topics, or just reorganized? (This affects whether you need separate databases or just metadata tags)
+Q1b: Can a student switch schemes mid-semester? (Edge case: student gets held back, new scheme rolls out)
+Q1c: Does MU publish a structured syllabus API, or will you manually scrape/OCR PDFs for each scheme?
+
+2. The "Gold Standard" Channel List
+You mentioned filtering videos through a "Gold Standard" channel list:
+
+Q2a: How many channels are we talking? (10? 50? 200?)
+Q2b: Is this list hardcoded by you, or can students propose new channels? (Community curation vs. admin-controlled)
+Q2c: What happens if a channel gets deleted or goes private? (YouTube API will return 0 results - need a fallback?)
+
+3. The Telegram Vault - File Chaos Management
+This is where most student projects die:
+
+Q3a: Who moderates uploads? If a student uploads a meme labeled "Operating Systems Notes," does it pollute the vault?
+Q3b: Storage limits: Supabase free tier = 500MB. If 500 students upload 10MB PDFs each, you're broke. Do you plan to:
+
+Compress files?
+Store them in Telegram (use it as file host) and only save metadata in Supabase?
+Purge old files?
+
+
+Q3c: Vision OCR on every upload is expensive. GPT-4o-mini Vision = ~$0.01 per image. With 1000 uploads/month, that's $10/month. Are you okay with this, or should we add a "student verification" step first?
+
+4. The Scout Agent - YouTube API Quotas
+YouTube API has a quota of 10,000 units/day (free tier). Each search = 100 units. That's 100 searches/day max:
+
+Q4a: If 50 students search "Deadlock Prevention" on the same day, you'll hit the limit by 10 AM. Solutions:
+
+Cache results (same topic = same videos for 7 days)?
+Rate-limit users (max 3 searches/day)?
+Pay for increased quota?
+
+
+Q4b: How do you handle regional restrictions? Some channels block videos in India. Should the Scout skip those?
+
+5. The Answer Engine - Quality Control
+Your "Master Answer" generation is the core IP of this product:
+
+Q5a: Who validates if the generated answer is actually "MU-style"? Will you:
+
+Show it to students first as "beta" answers?
+Have a teacher/senior manually approve the first 50 answers?
+
+
+Q5b: If the YouTube transcript is gibberish (poor audio quality), does the system fail silently or warn the user?
+Q5c: What's the fallback if no community notes exist for a topic? Generate from transcript alone?
+
+6. The Reality Check Planner - Ethical Boundary
+"Survival Mode" is brilliant marketing, but:
+
+Q6a: Are you comfortable being the app that officially tells students to skip topics? (Some students might fail and blame your AI)
+Q6b: How do you calculate "Pass-Guaranteed" modules? Historical PYQ frequency? Teacher tips? This needs a transparent algorithm.
+
+7. Vibe Coding Philosophy - Speed vs. Maintainability
+Since you're using Cursor Composer:
+
+Q7a: Are you building this solo or with a team? (Vibe coding works great solo but creates chaos with 2+ people touching the same codebase)
+Q7b: Timeline: Do you need a working demo in 2 weeks (for investor pitch) or 2 months (for actual students to use)?
+Q7c: Will you write tests, or are we going full "move fast and fix bugs when students complain"?

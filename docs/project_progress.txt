@@ -1,0 +1,17 @@
+Day 1:
+[ ] Person C: Supabase schema deployed
+[ ] Person A: Next.js project initialized with Shadcn
+[ ] Person B: FastAPI project running with /health endpoint
+[ ] Person D: List of 15 YouTube channels finalized
+
+Day 2:
+[ ] Person C: CSV with 20+ subjects imported into Supabase
+[ ] Person A: SchemeSelector component working with localStorage
+[ ] Person B: /subjects endpoint returns filtered data
+[ ] Person D: channel_whitelist table populated
+
+Day 3:
+[ ] Full integration test: Select scheme → See subjects → Click subject
+[ ] Basic authentication working (Supabase Auth)
+[ ] API caching logic implemented (even if not used yet)
+[ ] Team demo: Show working dashboard to a test user
