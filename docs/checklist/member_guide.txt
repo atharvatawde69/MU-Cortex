@@ -1,0 +1,95 @@
+How Team Members Should Use This Repo
+🔹 Step 1: Clone the repo
+git clone https://github.com/<username>/MU-Cortex.git
+cd MU-Cortex
+
+🔹 Step 2: Frontend setup (Person A)
+cd mu-cortex-frontend
+npm install
+
+
+Create .env.local (DO NOT commit):
+
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+
+
+Run:
+
+npm run dev
+
+🔹 Step 3: Backend setup (Person B)
+cd mu-cortex-backend
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+
+Create .env (DO NOT commit):
+
+SUPABASE_URL=...
+SUPABASE_SERVICE_KEY=...
+
+
+Run:
+
+uvicorn app.main:app --reload
+
+🔹 Step 4: Database (Person C)
+
+Supabase already live
+
+Schema + seed data already applied
+
+RLS policies documented in DATABASE_SETUP.md
+
+6️⃣ Rules Every Team Member MUST Follow
+❌ Never commit
+
+.env
+
+.env.local
+
+venv/
+
+node_modules/
+
+✅ Always commit
+
+Code
+
+Schemas
+
+Docs
+
+Config files (non-secret)
+
+🔐 Keys sharing rule
+
+Keys are shared privately between humans, never through Git.
+
+7️⃣ Why This Setup Is Efficient
+
+🔁 Easy onboarding for new members
+
+🔒 No secret leaks
+
+🧩 Clear separation of concerns
+
+📜 Clean Git history
+
+🚀 Ready for scaling & production
+
+✅ Final State
+
+The repository is production-grade,
+the workflow is industry-correct,
+and the team can move fast without breaking security.
+
+
+Next Steps:
+Turn this into a README.md
+
+Create a team onboarding checklist
+
+Or continue with Person D / next feature work

@@ -1,0 +1,172 @@
+✅ PART 1 — DATABASE & SUPABASE (Person C) DONE
+🔹 Supabase Setup
+
+✅ Supabase project created
+
+✅ Service role key & anon key configured
+
+✅ Environment variables set correctly
+
+✅ RLS policies configured safely
+
+🔹 Database Schema
+
+Created and verified 6 tables:
+
+users
+
+subjects
+
+topics
+
+video_resources
+
+predicted_questions
+
+channel_whitelist
+
+✅ UUID PKs
+
+✅ Indexes added
+
+✅ Foreign keys validated
+
+✅ MU-specific constraints considered (scheme, semester, branch)
+
+🔹 Data Seeding
+
+✅ Manual syllabus extraction (AIML, 2019 scheme)
+
+✅ CSV prepared & validated
+
+✅ Subjects seeded:
+
+Artificial Intelligence
+
+Computer Networks
+
+Data Warehousing & Mining
+
+✅ Topics seeded (~30 total)
+
+✅ Subject ↔ Topic mapping verified in Supabase
+
+✅ PART 2 — FRONTEND FOUNDATION (Person A) DONE
+🔹 Next.js Setup
+
+✅ Next.js 14 App Router
+
+✅ TypeScript + Tailwind
+
+✅ shadcn/ui integrated
+
+✅ Clean folder structure
+
+🔹 Scheme Selector
+
+✅ Scheme / Branch / Semester selection
+
+✅ Locking logic implemented
+
+✅ Reset flow works
+
+✅ Stored in localStorage
+
+✅ Non-blocking Supabase anon upsert to users
+
+✅ Redirects to dashboard after lock
+
+🔹 Routing (Major Win)
+
+✅ Resolved App Router conflicts
+
+✅ Removed route-group ambiguity
+
+✅ Final stable routing:
+
+/
+/dashboard
+/dashboard/subject/:id
+
+
+✅ No 404s
+
+✅ Logout clears state correctly
+
+✅ PART 3 — BACKEND FOUNDATION (Person B) DONE
+🔹 FastAPI Backend
+
+✅ Project structure created
+
+✅ Environment variables configured
+
+✅ Supabase client integrated
+
+🔹 API Endpoints
+
+✅ GET /health
+
+✅ GET /subjects
+
+Filters by scheme_id, branch, semester
+
+Verified from browser & frontend
+
+🟡 /videos stub ready (next phase)
+
+🔹 Caching + Agents
+
+✅ Scout agent stub created
+
+✅ Cache utility in place
+
+✅ PART 4 — FRONTEND ↔ BACKEND INTEGRATION (Person A + B) DONE
+🔹 Dashboard
+
+✅ Reads scheme from localStorage
+
+✅ Fetches subjects from backend
+
+✅ Shows loading skeletons
+
+✅ Renders SubjectCard grid
+
+✅ Handles empty & error states
+
+🔹 Subject Cards
+
+✅ Clickable cards
+
+✅ Route to /dashboard/subject/:id
+
+✅ Scheme badge shown
+
+✅ Topic count placeholder (0 — expected)
+
+🔹 Subject Page
+
+✅ Placeholder page renders correctly
+
+✅ Receives subject UUID
+
+❌ Topics not yet fetched (next step)
+
+🟢 CURRENT PROJECT STATE (STABLE)
+
+What works end-to-end:
+
+Landing → Scheme Lock → Dashboard → Subject Page
+
+
+
+🎯 Milestones Achieved
+
+✔️ Database is LIVE
+
+✔️ Backend API is LIVE
+
+✔️ Frontend is LIVE
+
+✔️ Integration verified
+
+✔️ Routing stabilized (hardest part)

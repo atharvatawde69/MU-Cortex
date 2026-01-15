@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ChevronDown } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -52,6 +53,8 @@ function isCompleteSelection(sel: SchemeSelection | null): sel is SchemeSelectio
 export function SchemeSelector() {
   const [selection, setSelection] = React.useState<SchemeSelection | null>(null)
   const [locked, setLocked] = React.useState(false)
+  const router = useRouter()
+  const didRedirectRef = React.useRef(false)
 
   React.useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY)
@@ -80,7 +83,7 @@ export function SchemeSelector() {
       const branch = selection.branch
       const semester = selection.semester
 
-      void supabase
+      const upsertPromise = supabase
         .from("users")
         .upsert(
           {
@@ -117,6 +120,12 @@ export function SchemeSelector() {
 
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(selection))
       setLocked(true)
+
+      void upsertPromise.finally(() => {
+        if (didRedirectRef.current) return
+        didRedirectRef.current = true
+        router.push("/dashboard")
+      })
     }
   }, [locked, selection])
 
@@ -152,6 +161,7 @@ export function SchemeSelector() {
     window.localStorage.removeItem(STORAGE_KEY)
     setSelection(null)
     setLocked(false)
+    didRedirectRef.current = false
   }
 
   return (

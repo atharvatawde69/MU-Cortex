@@ -1,0 +1,140 @@
+📦 MU-Cortex Git & GitHub Workflow Guide
+
+This document explains how the project was committed and pushed to GitHub, why a GitHub token was required, and how team members should use the repository safely and efficiently.
+
+1️⃣ Repository Structure on GitHub
+
+The GitHub repository now contains three clearly separated responsibilities:
+
+MU-Cortex/
+│
+├── mu-cortex-frontend/     # Person A – Next.js frontend
+│
+├── mu-cortex-backend/      # Person B – FastAPI backend
+│
+├── schema.sql              # Person C – Database schema
+├── syllabus_seed_data.csv  # Person C – Seed data
+├── DATABASE_SETUP.md       # Person C – DB handoff documentation
+│
+├── docs/                   # Project checklists & planning
+│
+└── .gitignore              # Root ignore rules (env, venv, etc.)
+
+
+This structure allows:
+
+Independent frontend & backend work
+
+Clear ownership per role
+
+No mixing of secrets or environments
+
+2️⃣ How Commits Were Organized (Best Practice)
+
+We did NOT commit everything at once.
+Commits were made role-wise, which makes history readable and safe.
+
+✅ Commit Order
+🔹 Commit 1 — Person C (Database)
+
+schema.sql
+
+syllabus_seed_data.csv
+
+DATABASE_SETUP.md
+
+Supabase-related documentation
+
+📌 Purpose:
+
+Establish database as the source of truth before app logic.
+
+🔹 Commit 2 — Person A (Frontend)
+
+mu-cortex-frontend/app/
+
+components/, lib/
+
+Supabase anon-key integration
+
+SchemeSelector logic
+
+UI structure
+
+📌 Purpose:
+
+Lock frontend skeleton and Supabase read/write path.
+
+🔹 Commit 3 — Person B (Backend)
+
+mu-cortex-backend/app/
+
+FastAPI routers, models, cache
+
+Supabase service-role integration
+
+/health, /subjects, /videos endpoints
+
+📌 Purpose:
+
+Provide API layer between frontend and database.
+
+🔹 Commit 4 — Docs & Hygiene
+
+docs/
+
+.gitignore updates
+
+Ignoring venv/, .env, .env.local
+
+📌 Purpose:
+
+Prevent secrets, environments, and local files from leaking.
+
+3️⃣ Why a GitHub Token Was Required
+❌ Old way (no longer allowed)
+
+GitHub does NOT allow password authentication for Git operations anymore.
+
+✅ Correct modern way
+
+GitHub requires a Personal Access Token (PAT).
+
+What the token does
+
+Acts like a temporary password
+
+Allows Git to authenticate securely
+
+Can be:
+
+Scoped (only repo access)
+
+Expired
+
+Revoked anytime
+
+Why this is safer
+
+No real password exposure
+
+Tokens can be rotated
+
+Fine-grained access control
+
+4️⃣ How the Push Was Done (Correct Flow)
+1. Add GitHub remote
+git remote add origin https://github.com/<username>/MU-Cortex.git
+
+2. Push using token
+git push -u origin main
+
+
+When prompted:
+
+Username → GitHub username
+
+Password → paste the token (not GitHub password)
+
+GitHub token- <REDACTED>
+
