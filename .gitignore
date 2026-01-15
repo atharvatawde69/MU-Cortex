@@ -3,3 +3,6 @@
 __pycache__/
 *.pyc
 CREDENTIALS.txt
+# Python virtual environments
+venv/
+mu-cortex-backend/venv/
