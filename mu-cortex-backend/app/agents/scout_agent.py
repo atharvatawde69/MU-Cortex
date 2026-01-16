@@ -1,3 +1,4 @@
+# Phase 2 Scout logic frozen — do not modify without review
 import os
 import requests
 

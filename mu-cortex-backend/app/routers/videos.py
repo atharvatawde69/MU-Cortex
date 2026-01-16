@@ -1,3 +1,4 @@
+# Phase 2 Scout logic frozen — do not modify without review
 # from fastapi import APIRouter, Query
 
 # from app.agents.scout_agent import get_videos_for_topic
