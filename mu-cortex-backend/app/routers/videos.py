@@ -21,7 +21,8 @@
 #     set_cached_videos(topic_id, videos)
 #     return videos
 
-from fastapi import APIRouter
+from typing import Optional
+from fastapi import APIRouter, Query
 from app.agents.scout_agent import fetch_videos_from_channel, fetch_videos_from_global_search
 from app.models.database import supabase
 from app.utils.cache import get_cache, set_cache
@@ -36,9 +37,39 @@ def extract_video_id(youtube_url: str) -> str:
 
 
 @router.get("/")
-def get_videos(topic_id: str, limit: int = 10):
-
-    cache_key = f"videos:{topic_id}"
+def get_videos(
+    topic_id: str,
+    limit: int = 10,
+    query: Optional[str] = Query(
+        None,
+        description="Optional search query override (e.g. 'bankers algorithm deadlock')"
+    ),
+):
+    # query is the YouTube search intent; topic_id is for caching + DB integrity
+    
+    # Determine search query: use provided query or fetch topic name from DB
+    if query is None:
+        # Fetch topic name from database
+        topic_resp = (
+            supabase.table("topics")
+            .select("name")
+            .eq("id", topic_id)
+            .execute()
+        )
+        
+        if not topic_resp.data:
+            # If topic not found, fallback to topic_id as query
+            search_query = topic_id
+        else:
+            search_query = topic_resp.data[0]["name"]
+    else:
+        search_query = query
+    
+    # Build cache key: include query if provided
+    if query:
+        cache_key = f"videos:{topic_id}:{query.lower()}"
+    else:
+        cache_key = f"videos:{topic_id}"
 
     # 1. check cache
     cached = get_cache(cache_key)
@@ -63,7 +94,7 @@ def get_videos(topic_id: str, limit: int = 10):
     MAX_WHITELIST_PER_CHANNEL = 3
     for channel in channels:
         videos = fetch_videos_from_channel(
-            query=topic_id,
+            query=search_query,
             channel_id=channel["channel_id"],
             max_results=MAX_WHITELIST_PER_CHANNEL,
         )
@@ -72,7 +103,7 @@ def get_videos(topic_id: str, limit: int = 10):
     # 4. scout youtube from global search (any channel, excluding whitelisted)
     # Target: ~20 total candidates (whitelisted + global combined)
     global_videos = fetch_videos_from_global_search(
-        query=topic_id,
+        query=search_query,
         max_results=17,
         exclude_channel_ids=whitelisted_channel_ids,
     )
@@ -94,9 +125,9 @@ def get_videos(topic_id: str, limit: int = 10):
     deduplicated_videos = list(video_map.values())
     
     # 6. Compute relevance_score for internal ranking
-    # relevance_score represents how well the video matches the topic keyword
+    # relevance_score represents how well the video matches the search query
     # It's a separate metric from engagement_score, used for internal ranking only
-    topic_lower = topic_id.lower()
+    search_query_lower = search_query.lower()
     for video in deduplicated_videos:
         # Start with relevance_score = 0.0
         relevance_score = 0.0
@@ -105,11 +136,11 @@ def get_videos(topic_id: str, limit: int = 10):
         title = video.get("title", "")
         description = video.get("description", "")
         
-        if title and topic_lower in title.lower():
-            # Topic keyword found in title: add 1.0 to relevance_score
+        if title and search_query_lower in title.lower():
+            # Search query found in title: add 1.0 to relevance_score
             relevance_score += 1.0
-        elif description and topic_lower in description.lower():
-            # Topic keyword found in description: add 0.5 to relevance_score
+        elif description and search_query_lower in description.lower():
+            # Search query found in description: add 0.5 to relevance_score
             relevance_score += 0.5
         
         # Attach relevance_score to video object (internal use only)
