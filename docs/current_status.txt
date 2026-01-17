@@ -1,172 +1,124 @@
-✅ PART 1 — DATABASE & SUPABASE (Person C) DONE
-🔹 Supabase Setup
-
-✅ Supabase project created
-
-✅ Service role key & anon key configured
-
-✅ Environment variables set correctly
-
-✅ RLS policies configured safely
-
-🔹 Database Schema
-
-Created and verified 6 tables:
-
-users
-
-subjects
-
-topics
-
-video_resources
-
-predicted_questions
-
-channel_whitelist
-
-✅ UUID PKs
-
-✅ Indexes added
-
-✅ Foreign keys validated
-
-✅ MU-specific constraints considered (scheme, semester, branch)
-
-🔹 Data Seeding
-
-✅ Manual syllabus extraction (AIML, 2019 scheme)
-
-✅ CSV prepared & validated
-
-✅ Subjects seeded:
-
-Artificial Intelligence
-
-Computer Networks
-
-Data Warehousing & Mining
-
-✅ Topics seeded (~30 total)
-
-✅ Subject ↔ Topic mapping verified in Supabase
-
-✅ PART 2 — FRONTEND FOUNDATION (Person A) DONE
-🔹 Next.js Setup
-
-✅ Next.js 14 App Router
-
-✅ TypeScript + Tailwind
-
-✅ shadcn/ui integrated
-
-✅ Clean folder structure
-
-🔹 Scheme Selector
-
-✅ Scheme / Branch / Semester selection
-
-✅ Locking logic implemented
-
-✅ Reset flow works
-
-✅ Stored in localStorage
-
-✅ Non-blocking Supabase anon upsert to users
-
-✅ Redirects to dashboard after lock
-
-🔹 Routing (Major Win)
-
-✅ Resolved App Router conflicts
-
-✅ Removed route-group ambiguity
-
-✅ Final stable routing:
-
-/
-/dashboard
-/dashboard/subject/:id
-
-
-✅ No 404s
-
-✅ Logout clears state correctly
-
-✅ PART 3 — BACKEND FOUNDATION (Person B) DONE
-🔹 FastAPI Backend
-
-✅ Project structure created
-
-✅ Environment variables configured
-
-✅ Supabase client integrated
-
-🔹 API Endpoints
-
-✅ GET /health
-
-✅ GET /subjects
-
-Filters by scheme_id, branch, semester
-
-Verified from browser & frontend
-
-🟡 /videos stub ready (next phase)
-
-🔹 Caching + Agents
-
-✅ Scout agent stub created
-
-✅ Cache utility in place
-
-✅ PART 4 — FRONTEND ↔ BACKEND INTEGRATION (Person A + B) DONE
-🔹 Dashboard
-
-✅ Reads scheme from localStorage
-
-✅ Fetches subjects from backend
-
-✅ Shows loading skeletons
-
-✅ Renders SubjectCard grid
-
-✅ Handles empty & error states
-
-🔹 Subject Cards
-
-✅ Clickable cards
-
-✅ Route to /dashboard/subject/:id
-
-✅ Scheme badge shown
-
-✅ Topic count placeholder (0 — expected)
-
-🔹 Subject Page
-
-✅ Placeholder page renders correctly
-
-✅ Receives subject UUID
-
-❌ Topics not yet fetched (next step)
-
-🟢 CURRENT PROJECT STATE (STABLE)
-
-What works end-to-end:
-
-Landing → Scheme Lock → Dashboard → Subject Page
-
-
-
-🎯 Milestones Achieved
-
-✔️ Database is LIVE
-
-✔️ Backend API is LIVE
-
-✔️ Frontend is LIVE
-
-✔️ Integration verified
-
-✔️ Routing stabilized (hardest part)
+🧱 PHASE 1 — FOUNDATION (SCHEME BRAIN)
+🎯 Goal
+Create a reliable academic backbone before adding AI.
+🗄️ Database (Supabase)
+Finalized schema (live):
+* users — scheme-locked students
+* subjects — scheme + semester + branch scoped
+* topics — module-level topics (current granularity)
+* video_resources — cached YouTube results
+* channel_whitelist — trusted channel bias list
+Key decisions:
+* Scheme isolation enforced at DB + API level
+* UUID-based routing to avoid collisions
+* RLS policies added incrementally and tested
+🔧 Backend (FastAPI)
+Completed APIs:
+EndpointPurposeStatus/healthServer check✅/subjectsFetch subjects by scheme/sem/branch✅/topicsFetch module-wise topics✅/videosFetch ranked YouTube videos✅
+Stability work done:
+* Input validation
+* Safe 404 handling
+* No hard crashes on bad UUIDs
+* Clean response contracts for frontend
+🖥️ Frontend (Next.js App Router)
+Core flows completed:
+* Scheme selector with lock + reset
+* Scheme persistence via localStorage
+* Redirect to dashboard after lock
+* Logout clears scheme safely
+Routing stabilized after refactors:
+* / → Landing
+* /dashboard → Subjects
+* /dashboard/subject/[id] → Topics
+* /dashboard/subject/[id]/[topic] → Videos
+🤖 PHASE 2 — AUTO-SCOUT (CORE VALUE)
+🎯 Goal
+Replace manual YouTube searching with intelligent, syllabus-aware discovery.
+🔹 PERSON D — YouTube Foundation (Completed)
+YouTube API
+* API v3 enabled & tested
+* Quota-aware usage
+* Statistics endpoint integrated
+Channel Whitelist
+* Priority-based (soft bias, not hard filter)
+* Initial trusted creators added
+* Ready for expansion (8–15 channels planned)
+🔹 PERSON B — Scout Agent & Intelligence (Completed)
+Scout Agent Logic (Frozen)
+What it does:
+* Searches YouTube using:
+   * Topic name (auto)
+   * Optional user-entered subtopic prompt
+* Pulls ~20 candidate videos
+* Deduplicates by video ID
+* Scores videos using:
+   * Views
+   * Comments
+   * Title relevance
+   * Description relevance
+* Applies soft whitelist bias
+* Demotes irrelevant videos (even if whitelisted)
+* Sorts server-side (frontend is render-only)
+* Caches results for 7 days
+⚠️ Scout logic is intentionally frozen to avoid instability.
+/videos Endpoint (Stable)
+* Supports:
+   * Auto topic search
+   * Manual free-text search within topic context
+* Returns:
+   * Ranked videos
+   * Cached flag
+   * Metadata for UI
+* Cache hit verified via repeated calls
+/topics Endpoint (New, Verified)
+* Returns:
+   * Subject name
+   * Modules
+   * Topics grouped by module number
+* Designed explicitly for frontend rendering
+🔹 PERSON A — Frontend UX (Completed)
+Subjects Dashboard
+* Fetches from backend
+* Displays cards with topic counts
+* Skeleton loaders
+* Error & empty states
+Topics Page
+* Module-wise grouping
+* Clean navigation
+* Responsive layout
+Videos Page
+* Auto search on load
+* Manual sub-topic search input
+* Cached indicator
+* Skeleton loaders
+* Error handling
+* Click → opens YouTube
+Important UX decision:
+* No ranking logic in frontend
+* Backend = single source of truth
+🔄 END-TO-END FLOW (VERIFIED)
+
+Landing
+  ↓
+Scheme Lock
+  ↓
+Dashboard (Subjects)
+  ↓
+Subject → Topics (Modules)
+  ↓
+Topic → Videos (Auto-search)
+  ↓
+Optional: User enters sub-topic (e.g. "Naive Bayes")
+  ↓
+Ranked videos returned + cached
+All steps tested locally.
+🧠 CURRENT DATA STATE
+Subjects
+* AIML Sem 5 & 6 (initial)
+* Expansion planned (CS, IT, more AIML)
+Topics
+* Currently module-level
+* Subtopics intentionally deferred
+Channels
+* Core trusted creators added
+* Whitelist will be expanded next

@@ -1,0 +1,118 @@
+✅ Telegram Bot — Current Achievements
+1️⃣ Bot & Channel Setup
+
+Telegram bot created and running via Aiogram
+
+Bot added as admin to the channel
+
+Bot successfully listens to channel posts (documents & photos)
+
+Environment setup is stable (root .env + bot .env)
+
+2️⃣ Safe Upload Flow (Two-Step Tagging)
+
+Users upload PDFs/images without captions (Telegram limitation handled)
+
+Bot detects uploads and blocks processing if tags are missing
+
+Bot prompts users to reply to the file with tags
+
+Only reply-based tags are accepted → prevents misclassification
+
+No silent or accidental ingestion (safety-first design)
+
+3️⃣ Tag Parsing & Validation
+
+Extracts hashtags from reply
+
+Validates:
+
+Subject tag
+
+Scheme tag (2019 / 2024)
+
+Rejects unknown subjects with a clear error message
+
+Scheme normalization handled correctly
+
+4️⃣ Subject Resolution (Robust Fix Applied)
+
+User-facing tags remain human-readable
+
+e.g. #ArtificialIntelligence
+
+Internally mapped to stable subject codes
+
+e.g. CSC503
+
+Supabase queries use:
+
+subject_code + scheme_id
+
+Eliminated:
+
+ILIKE queries
+
+Space-related REST crashes
+
+Cloudflare 1101 / 500 errors
+
+5️⃣ File Processing Pipeline (Working)
+
+Telegram is used as primary file storage
+
+Supabase stores metadata only
+
+For each valid upload, bot stores:
+
+subject_id
+
+scheme_id
+
+resource_type
+
+file_name
+
+telegram_file_id
+
+telegram_message_link
+
+tags
+
+timestamp
+
+Data is inserted into community_resources successfully
+
+6️⃣ Observability & Stability
+
+Clear terminal logs for:
+
+Upload detection
+
+Tag receipt
+
+Successful storage
+
+No crashes on bad input
+
+No broken states
+
+End-to-end flow verified multiple times
+
+🧠 Current State (Summary)
+
+Telegram bot is production-stable
+
+Upload → Tag → Store flow is safe and deterministic
+
+Architecture supports future scaling
+
+No UX changes needed for students
+
+Ready for:
+
+Subject expansion
+
+Notes browsing in web app
+
+Phase D4 and beyond

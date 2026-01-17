@@ -1,0 +1,101 @@
+my first question is when the student will upload notes and give its tags what will the bot do with it and how and where will these notes be used just answer what i have asked no extra info
+
+Direct answer — no extra information.
+
+When a student uploads notes with valid tags, the bot will:
+
+Read the tags
+
+Identify subject (e.g. Operating Systems)
+
+Identify scheme (e.g. 2019 / 2024)
+
+Validate against your database
+
+Check that the subject exists under that scheme
+
+Reject the upload if it doesn’t match
+
+Store a reference in Supabase
+
+Save metadata in community_resources:
+
+subject_id
+
+scheme_id
+
+file name & size
+
+telegram_file_id
+
+telegram_message_link
+
+tags
+
+upload timestamp
+
+Make the notes usable in the system
+
+These records will later be queried by your backend
+
+Shown in the web app under:
+
+Scheme → Subject → Community Notes / Resources
+
+File stays on Telegram
+
+The bot does not download or rehost the file
+
+Students access it via the stored Telegram message link
+
+That’s it.
+
+okay so basically we dont upload the pdf files on supabase right we just store the metadata in supabase and whenever a student clicks on that particular subject then the notes from telegram are available for the user right there or does the app redirect to the telegram channel
+
+Direct answer, no extra info:
+
+No, the PDF files are not uploaded to Supabase.
+
+Only metadata is stored in Supabase.
+
+When a student uses the web app:
+
+The app shows the notes as resources inside the subject page (title, type, tags, date).
+
+When the student clicks a note:
+
+The app redirects to the Telegram message link
+(i.e., opens the exact post in your Telegram channel where the PDF is hosted).
+
+So:
+
+Storage → Telegram
+
+Indexing & discovery → Supabase
+
+Access → Redirect to Telegram
+
+That’s the flow.
+
+telegram doesnt have any storage constraint right?
+
+Direct answer:
+
+Telegram has no practical storage limit for channels
+(messages and files are kept indefinitely).
+
+File size limits apply per file, not total storage:
+
+Free accounts: up to 2 GB per file
+
+Telegram Premium: up to 4 GB per file
+
+Files uploaded to a channel do not expire and are not deleted automatically.
+
+So for your use case:
+
+✅ Long-term storage is safe
+
+✅ No quota you’ll “run out of”
+
+❌ Only restriction is individual file size, not total storage
