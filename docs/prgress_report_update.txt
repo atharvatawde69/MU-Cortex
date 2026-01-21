@@ -1,0 +1,210 @@
+📌 OVERALL PROJECT PROGRESS REPORT (UP TO NOW)
+🧱 PHASE 1 — CORE ACADEMIC FOUNDATION (COMPLETED)
+🗄️ Database (Supabase)
+
+Finalized schema for:
+
+users (scheme-locked)
+
+subjects (scheme + semester + branch scoped)
+
+topics (module-level granularity)
+
+video_resources (YouTube cache)
+
+channel_whitelist
+
+Scheme isolation enforced at DB + API level
+
+UUID-based routing implemented
+
+RLS policies added incrementally and verified
+
+Production-ready views created where needed
+
+🔧 Backend (FastAPI)
+
+Stable APIs:
+
+/health
+
+/subjects
+
+/topics
+
+/videos
+
+Robust input validation
+
+Graceful handling of bad UUIDs
+
+Clean, frontend-safe response contracts
+
+Scout Agent logic frozen and verified
+
+Caching verified (7-day cache)
+
+🖥️ Frontend (Next.js App Router)
+
+Scheme selector with lock & reset
+
+Scheme persistence via localStorage
+
+Clean routing:
+
+Landing → Dashboard → Subjects → Topics → Videos
+
+Module-wise topic grouping
+
+Skeleton loaders, error states, empty states
+
+Backend as single source of truth
+
+Frontend is render-only (no ranking logic)
+
+🤖 TELEGRAM BOT — COMMUNITY NOTES PIPELINE (MAJOR ADDITION)
+✅ What the Telegram Bot Can Do (CURRENT STATE)
+🧠 Bot Core
+
+Aiogram 3 bot created and stabilized
+
+/start and /help commands working
+
+Runs locally via terminal (MVP mode)
+
+📤 File Upload Handling
+
+Detects PDF uploads in Telegram channel
+
+Handles direct channel uploads (no caption beforehand)
+
+Prevents silent misclassification
+
+🔄 Two-Step Tagging Safety Flow (CRITICAL FEATURE)
+
+Upload without tags → bot blocks processing
+
+Bot asks user to reply with tags
+
+User replies → bot validates and continues
+
+Prevents wrong scheme / subject pollution
+
+🏷️ Tag Processing & Validation
+
+Extracts:
+
+Subject tag
+
+Scheme tag
+
+Internally maps subject tags → subject codes
+
+Subject lookup done via subject code (not name)
+
+Eliminated PostgREST crashes and ambiguity
+
+Wrong subject → bot rejects with error
+
+🗄️ Supabase Integration
+
+Metadata-only storage (Telegram is file host)
+
+Inserts into community_resources table
+
+Stored fields include:
+
+subject_id
+
+scheme_id
+
+file metadata
+
+telegram_file_id
+
+telegram_message_link
+
+tags
+
+status (pending by default)
+
+🔐 Security & Visibility
+
+Row Level Security enabled and verified
+
+Students can see only approved resources
+
+Pending uploads are invisible to frontend users
+
+Service role (bot) bypasses RLS safely
+
+👁️ Frontend-Ready View
+
+community_resources_with_subject view created
+
+Includes:
+
+subject_name
+
+subject_code
+
+Verified with real Telegram uploads
+
+No joins required in frontend/API
+
+✅ End-to-End Verified
+
+Telegram → Bot → Supabase → View
+
+Multiple real PDFs tested
+
+Duplicate uploads blocked
+
+Correct scheme & subject mapping confirmed
+
+🧪 BOT FUNCTIONALITY STATUS (CHECKLIST)
+[x] Bot created & authenticated
+[x] Channel setup & permissions verified
+[x] Receives PDFs from channel
+[x] Two-step tagging implemented
+[x] Tag validation enforced
+[x] Subject resolved via subject code
+[x] Supabase insert successful
+[x] Status defaults to pending
+[x] RLS blocks student access to pending data
+[x] View exposes approved data cleanly
+[x] Local execution stable
+
+⏸️ PLANNED BUT INTENTIONALLY DEFERRED TASKS
+🟡 Telegram Bot (Future)
+[ ] Bot deployment (Render / Railway)
+[ ] 24/7 uptime without local machine
+[ ] Bot-based admin approval commands
+[ ] OCR for handwritten notes
+[ ] Topic auto-classification
+
+🟡 Database / Backend
+[ ] Admin moderation UI
+[ ] Approval workflow (pending → approved)
+[ ] Download count increment logic
+[ ] Topic-level linking for community notes
+
+🟡 Frontend
+[ ] Community Notes UI (read-only)
+[ ] Subject-wise notes listing
+[ ] Approved-only filtering via view
+[ ] Download / open-from-Telegram UX
+
+🏁 CURRENT PROJECT STATE (HONEST)
+
+Core academic platform: stable
+
+YouTube intelligence: done & frozen
+
+Telegram bot: production-grade MVP
+
+Database: secure & future-proof
+
+Deployment & moderation: intentionally postponed
+
+You are not missing anything critical for a demo or MVP.

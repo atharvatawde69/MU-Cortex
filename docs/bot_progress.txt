@@ -1,118 +1,80 @@
-✅ Telegram Bot — Current Achievements
-1️⃣ Bot & Channel Setup
+📊 Telegram Bot – Overall Progress Report (Start → Now)
+🧱 Foundation & Setup
 
-Telegram bot created and running via Aiogram
+Telegram bot created and authenticated
 
-Bot added as admin to the channel
+Telegram channel created and bot added as admin
 
-Bot successfully listens to channel posts (documents & photos)
+Environment setup finalized (root .env + bot-specific .env)
 
-Environment setup is stable (root .env + bot .env)
+Aiogram 3 bot structure created and stabilized
 
-2️⃣ Safe Upload Flow (Two-Step Tagging)
+🔄 Upload & Tagging Flow
 
-Users upload PDFs/images without captions (Telegram limitation handled)
+Bot successfully detects PDF uploads in channel
 
-Bot detects uploads and blocks processing if tags are missing
+Implemented two-step tagging flow:
 
-Bot prompts users to reply to the file with tags
+Upload file → bot asks for tags if missing
 
-Only reply-based tags are accepted → prevents misclassification
+User replies with tags → bot validates and proceeds
 
-No silent or accidental ingestion (safety-first design)
+Prevents incorrect scheme/subject uploads (safety enforced)
 
-3️⃣ Tag Parsing & Validation
+🧠 Tag Processing & Mapping
 
-Extracts hashtags from reply
+Subject tags mapped internally to subject codes
 
-Validates:
+Scheme extracted reliably from tags
 
-Subject tag
+Subject lookup now uses subject code (not name) → avoids DB errors
 
-Scheme tag (2019 / 2024)
+Tag validation confirmed via logs and Telegram responses
 
-Rejects unknown subjects with a clear error message
+🗄️ Database Integration (Supabase)
 
-Scheme normalization handled correctly
+community_resources table created and finalized
 
-4️⃣ Subject Resolution (Robust Fix Applied)
+Metadata-only storage (Telegram is file host)
 
-User-facing tags remain human-readable
+Defaults, constraints, and indexes verified
 
-e.g. #ArtificialIntelligence
+Telegram bot inserts rows successfully (pending by default)
 
-Internally mapped to stable subject codes
+🔐 Security (RLS)
 
-e.g. CSC503
+Row Level Security enabled correctly
 
-Supabase queries use:
+SELECT policy added:
 
-subject_code + scheme_id
+Students can view approved resources only
 
-Eliminated:
+Verified via Supabase UI and SQL (relrowsecurity = true)
 
-ILIKE queries
+👁️ Frontend-Ready View
 
-Space-related REST crashes
+community_resources_with_subject view created
 
-Cloudflare 1101 / 500 errors
+Includes subject name and subject code
 
-5️⃣ File Processing Pipeline (Working)
+Verified via SQL queries
 
-Telegram is used as primary file storage
+Confirmed that uploaded Telegram files appear in the view
 
-Supabase stores metadata only
+✅ End-to-End Verification
 
-For each valid upload, bot stores:
+Telegram → Bot → Supabase → View flow fully tested
 
-subject_id
+Multiple real PDFs uploaded and visible via DB view
 
-scheme_id
+Status and subject mapping confirmed correct
 
-resource_type
-
-file_name
-
-telegram_file_id
-
-telegram_message_link
-
-tags
-
-timestamp
-
-Data is inserted into community_resources successfully
-
-6️⃣ Observability & Stability
-
-Clear terminal logs for:
-
-Upload detection
-
-Tag receipt
-
-Successful storage
-
-No crashes on bad input
-
-No broken states
-
-End-to-end flow verified multiple times
-
-🧠 Current State (Summary)
+🏁 Current State
 
 Telegram bot is production-stable
 
-Upload → Tag → Store flow is safe and deterministic
+Upload pipeline is safe, validated, and auditable
 
-Architecture supports future scaling
+Database is secure, queryable, and frontend-ready
 
-No UX changes needed for students
-
-Ready for:
-
-Subject expansion
-
-Notes browsing in web app
-
-Phase D4 and beyond
+All planned goals for D1 → D4 are achieved

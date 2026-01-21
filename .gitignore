@@ -6,3 +6,11 @@ CREDENTIALS.txt
 # Python virtual environments
 venv/
 mu-cortex-backend/venv/
+# Virtual environments
+mu-cortex-venv/
+telegram_bot/bot-venv/
+
+# Generated / derived data
+pyq_samples/
+pyq_parsed/
+__pycache__/

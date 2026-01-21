@@ -1,124 +1,302 @@
-🧱 PHASE 1 — FOUNDATION (SCHEME BRAIN)
-🎯 Goal
-Create a reliable academic backbone before adding AI.
-🗄️ Database (Supabase)
-Finalized schema (live):
-* users — scheme-locked students
-* subjects — scheme + semester + branch scoped
-* topics — module-level topics (current granularity)
-* video_resources — cached YouTube results
-* channel_whitelist — trusted channel bias list
-Key decisions:
-* Scheme isolation enforced at DB + API level
-* UUID-based routing to avoid collisions
-* RLS policies added incrementally and tested
-🔧 Backend (FastAPI)
-Completed APIs:
-EndpointPurposeStatus/healthServer check✅/subjectsFetch subjects by scheme/sem/branch✅/topicsFetch module-wise topics✅/videosFetch ranked YouTube videos✅
-Stability work done:
-* Input validation
-* Safe 404 handling
-* No hard crashes on bad UUIDs
-* Clean response contracts for frontend
-🖥️ Frontend (Next.js App Router)
-Core flows completed:
-* Scheme selector with lock + reset
-* Scheme persistence via localStorage
-* Redirect to dashboard after lock
-* Logout clears scheme safely
-Routing stabilized after refactors:
-* / → Landing
-* /dashboard → Subjects
-* /dashboard/subject/[id] → Topics
-* /dashboard/subject/[id]/[topic] → Videos
-🤖 PHASE 2 — AUTO-SCOUT (CORE VALUE)
-🎯 Goal
-Replace manual YouTube searching with intelligent, syllabus-aware discovery.
-🔹 PERSON D — YouTube Foundation (Completed)
-YouTube API
-* API v3 enabled & tested
-* Quota-aware usage
-* Statistics endpoint integrated
-Channel Whitelist
-* Priority-based (soft bias, not hard filter)
-* Initial trusted creators added
-* Ready for expansion (8–15 channels planned)
-🔹 PERSON B — Scout Agent & Intelligence (Completed)
-Scout Agent Logic (Frozen)
-What it does:
-* Searches YouTube using:
-   * Topic name (auto)
-   * Optional user-entered subtopic prompt
-* Pulls ~20 candidate videos
-* Deduplicates by video ID
-* Scores videos using:
-   * Views
-   * Comments
-   * Title relevance
-   * Description relevance
-* Applies soft whitelist bias
-* Demotes irrelevant videos (even if whitelisted)
-* Sorts server-side (frontend is render-only)
-* Caches results for 7 days
-⚠️ Scout logic is intentionally frozen to avoid instability.
-/videos Endpoint (Stable)
-* Supports:
-   * Auto topic search
-   * Manual free-text search within topic context
-* Returns:
-   * Ranked videos
-   * Cached flag
-   * Metadata for UI
-* Cache hit verified via repeated calls
-/topics Endpoint (New, Verified)
-* Returns:
-   * Subject name
-   * Modules
-   * Topics grouped by module number
-* Designed explicitly for frontend rendering
-🔹 PERSON A — Frontend UX (Completed)
-Subjects Dashboard
-* Fetches from backend
-* Displays cards with topic counts
-* Skeleton loaders
-* Error & empty states
-Topics Page
-* Module-wise grouping
-* Clean navigation
-* Responsive layout
-Videos Page
-* Auto search on load
-* Manual sub-topic search input
-* Cached indicator
-* Skeleton loaders
-* Error handling
-* Click → opens YouTube
-Important UX decision:
-* No ranking logic in frontend
-* Backend = single source of truth
-🔄 END-TO-END FLOW (VERIFIED)
+Perfect — here’s a clean, honest, end-to-end project progress update that extends your previous status and clearly shows what changed, what was fixed, and what was deferred.
 
+📘 MU-Cortex — Current Project Status (Updated)
+
+This update continues from your last documented progress and adds everything we’ve done since, especially around PYQ ingestion, OCR failures, and the final architectural pivot.
+
+🧱 PHASE 1 — FOUNDATION (SCHEME BRAIN) ✅ (Unchanged, Stable)
+🎯 Goal
+
+Create a reliable academic backbone before adding AI.
+
+🗄️ Database (Supabase) — Stable
+
+Finalized schema (live):
+
+users — scheme-locked students
+
+subjects — scheme + semester + branch scoped
+
+topics — module-level granularity
+
+video_resources — cached YouTube results
+
+channel_whitelist — trusted channel bias list
+
+Key decisions (still valid):
+
+Scheme isolation enforced at DB + API
+
+UUID-based routing
+
+RLS policies added incrementally & tested
+
+➡️ No changes here after this phase.
+
+🔧 Backend (FastAPI) — Stable
+
+Completed APIs:
+
+Endpoint	Purpose	Status
+/health	Server check	✅
+/subjects	Fetch subjects	✅
+/topics	Module-wise topics	✅
+/videos	Ranked YouTube videos	✅
+
+Stability guarantees:
+
+Input validation
+
+Safe 404 handling
+
+No crashes on bad UUIDs
+
+Clean response contracts
+
+➡️ Frozen intentionally.
+
+🖥️ Frontend (Next.js App Router) — Stable
+
+Completed flows:
+
+Scheme lock + reset
+
+Scheme persistence
+
+Dashboard routing
+
+Clean logout
+
+Routes stabilized:
+
+/ → Landing
+/dashboard → Subjects
+/dashboard/subject/[id] → Topics
+/dashboard/subject/[id]/[topic] → Videos
+
+
+➡️ Frontend remains render-only. No AI logic added.
+
+🤖 PHASE 2 — AUTO-SCOUT (CORE VALUE) ✅ (Completed & Frozen)
+🔹 PERSON D — YouTube Foundation
+
+YouTube API v3 enabled
+
+Quota-aware usage
+
+Stats endpoint integrated
+
+Whitelist with soft bias
+
+🔹 PERSON B — Scout Agent (Frozen by Design)
+
+What it does:
+
+Topic-aware search
+
+~20 candidates per query
+
+Deduplication
+
+Scoring (views, comments, relevance)
+
+Soft whitelist bias
+
+7-day caching
+
+➡️ This logic is locked to avoid instability.
+
+🔹 PERSON A — Frontend UX
+
+Subjects dashboard
+
+Topics grouped by module
+
+Videos page with:
+
+Auto search
+
+Manual sub-topic search
+
+Cache indicators
+
+Skeleton loaders
+
+Error states
+
+🔄 END-TO-END FLOW — VERIFIED
 Landing
-  ↓
-Scheme Lock
-  ↓
-Dashboard (Subjects)
-  ↓
-Subject → Topics (Modules)
-  ↓
-Topic → Videos (Auto-search)
-  ↓
-Optional: User enters sub-topic (e.g. "Naive Bayes")
-  ↓
-Ranked videos returned + cached
-All steps tested locally.
-🧠 CURRENT DATA STATE
-Subjects
-* AIML Sem 5 & 6 (initial)
-* Expansion planned (CS, IT, more AIML)
-Topics
-* Currently module-level
-* Subtopics intentionally deferred
-Channels
-* Core trusted creators added
-* Whitelist will be expanded next
+ → Scheme Lock
+ → Subjects
+ → Topics (Modules)
+ → Videos (Auto search)
+ → Optional sub-topic prompt
+ → Ranked + cached results
+
+
+✔️ Fully tested locally.
+
+🧠 PHASE 3 — PYQ INGESTION (MAJOR CHANGES)
+
+This is where the biggest evolution happened.
+
+❌ INITIAL APPROACH (ABANDONED)
+What we tried first:
+
+PDF → pdfplumber
+
+Fallback to Tesseract OCR
+
+Extract raw text
+
+Regex + LLM parsing
+
+Problems encountered:
+
+MU PDFs contain:
+
+Watermarks
+
+Broken glyphs
+
+Random character ordering
+
+OCR output was:
+
+Semantically corrupted
+
+Non-linear
+
+Question numbers destroyed
+
+Even advanced regex + LLM:
+
+Extracted only 1–2 questions
+
+Missed hierarchy (Q1 a/b OR blocks)
+
+⚠️ Root cause:
+OCR ≠ semantic document understanding.
+
+➡️ Decision: Stop investing time here.
+
+✅ FINAL SOLUTION — GEMINI VISION (ADOPTED)
+🔥 New Strategy (Successful)
+
+PDF → Gemini 2.5 Flash Vision → Structured Questions
+
+No OCR.
+No regex guessing.
+No text corruption.
+
+New Script Introduced
+pyq_pipeline/parse_pyq_vision.py
+
+What it does:
+
+Sends raw PDF bytes to Gemini Vision
+
+Gemini understands:
+
+Layout
+
+Question hierarchy
+
+OR blocks
+
+Marks
+
+Returns clean JSON directly
+
+Verified Results:
+
+14/14 questions extracted correctly
+
+Marks accurate
+
+OR questions preserved
+
+Modules inferred correctly
+
+Confidence scores assigned
+
+✔️ This finally solved the problem.
+
+🗃️ DATA FLOW (NEW)
+Where questions go:
+
+Output JSON:
+
+pyq_parsed/<paper>_vision.json
+
+
+Next step (planned):
+
+Insert into Supabase questions table
+
+Add:
+
+appeared_in (exam)
+
+year
+
+subject_id
+
+scheme
+
+Handling repeated questions:
+
+Hash or normalized text comparison
+
+Same question → multiple appeared_in rows
+
+Enables:
+
+Frequency analysis
+
+“Most asked questions”
+
+Predictive weightage
+
+🕒 WHAT WE DELIBERATELY DEFERRED
+Deferred Item	Reason
+Sub-topic granularity	Need PYQ frequency first
+Question difficulty scoring	Needs historical data
+AI answer generation	Depends on clean question DB
+PYQ-based recommendations	Needs 5–6 papers per subject
+Vision batch automation	Will add after Supabase insert
+🧠 KEY ARCHITECTURAL CHANGES (SUMMARY)
+❌ Removed / Deprecated
+
+OCR-heavy pipelines
+
+Regex-only parsing
+
+Large single-prompt LLM parsing
+
+✅ Added
+
+Gemini 2.5 Flash Vision
+
+Direct PDF semantic parsing
+
+Deterministic structured output
+
+Clean separation:
+
+Vision for ingestion
+
+LLMs later for reasoning
+
+🟢 CURRENT STATE (IMPORTANT)
+
+Foundation: Stable
+
+Auto-Scout: Frozen & reliable
+
+PYQ ingestion: Solved correctly
+
+Next real step:
+👉 Store extracted questions in Supabase and link them to subjects/topics
+
+You’re now past the hardest technical uncertainty of the entire system.
