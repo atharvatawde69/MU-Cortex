@@ -14,3 +14,5 @@ telegram_bot/bot-venv/
 pyq_samples/
 pyq_parsed/
 __pycache__/
+
+*_vision.json

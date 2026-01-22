@@ -300,3 +300,86 @@ Next real step:
 👉 Store extracted questions in Supabase and link them to subjects/topics
 
 You’re now past the hardest technical uncertainty of the entire system.
+
+What Is Officially DONE (Locked-In Progress)
+🔹 PYQ Pipeline (Major Milestone Achieved)
+
+✅ Gemini 2.5 Flash Vision–based PYQ extraction
+
+✅ Direct PDF → structured JSON (no OCR dependency)
+
+✅ Handles:
+
+Printed MU PDFs
+
+Watermarks
+
+Complex layouts
+
+Sub-questions (a/b/c)
+
+OR blocks
+
+✅ Extracts 100% of questions (verified: 14/14)
+
+✅ Output saved in pyq_parsed/ (ready for DB ingestion)
+
+🔹 OCR Pipeline (Correctly Downgraded to Fallback)
+
+Moved to ocr_fallback/
+
+Preserved for:
+
+Handwritten scans
+
+Extremely poor PDFs
+
+No longer blocks progress or pollutes main pipeline
+
+🔹 Repository Hygiene
+
+.gitignore fixed
+
+Virtual environments excluded
+
+Experimental artifacts isolated
+
+Vision pipeline is now the default & recommended path
+
+🧠 Architectural Decision (Very Important)
+
+You made the right call switching to Vision.
+
+Why this matters:
+
+OCR + regex + LLM is fragile and time-expensive
+
+Vision models understand layout + semantics
+
+This unlocks:
+
+Faster onboarding of new papers
+
+Better accuracy
+
+Less maintenance
+
+Easier future automation
+
+This is a production-grade decision, not a shortcut.
+
+⏸️ Explicitly Deferred (Intentionally)
+
+These are not failures, they’re smart deferrals:
+
+🔜 Automated duplicate-question detection across years
+
+🔜 Question frequency analytics
+
+🔜 Linking questions → syllabus topics automatically
+
+🔜 PYQ-based recommendation engine
+
+🔜 Student-facing PYQ UI
+
+All of these now become easy because the hard part (clean data) is solved.
