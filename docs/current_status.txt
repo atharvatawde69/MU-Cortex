@@ -1,12 +1,10 @@
-Perfect — here’s a clean, honest, end-to-end project progress update that extends your previous status and clearly shows what changed, what was fixed, and what was deferred.
-
 📘 MU-Cortex — Current Project Status (Updated)
 
-This update continues from your last documented progress and adds everything we’ve done since, especially around PYQ ingestion, OCR failures, and the final architectural pivot.
+This update extends the previous status and documents the successful Supabase ingestion pipeline, schema corrections, and data-integrity guarantees added after Gemini Vision extraction.
 
 🧱 PHASE 1 — FOUNDATION (SCHEME BRAIN) ✅ (Unchanged, Stable)
-🎯 Goal
 
+🎯 Goal
 Create a reliable academic backbone before adding AI.
 
 🗄️ Database (Supabase) — Stable
@@ -104,7 +102,7 @@ Soft whitelist bias
 
 7-day caching
 
-➡️ This logic is locked to avoid instability.
+➡️ Logic intentionally locked to avoid instability.
 
 🔹 PERSON A — Frontend UX
 
@@ -136,18 +134,19 @@ Landing
 
 ✔️ Fully tested locally.
 
-🧠 PHASE 3 — PYQ INGESTION (MAJOR CHANGES)
+🧠 PHASE 3 — PYQ INGESTION (MAJOR CHANGES + COMPLETED CORE)
 
-This is where the biggest evolution happened.
+This phase went through two iterations, with a major architectural pivot.
 
 ❌ INITIAL APPROACH (ABANDONED)
-What we tried first:
+
+Attempted pipeline:
 
 PDF → pdfplumber
 
-Fallback to Tesseract OCR
+OCR fallback via Tesseract
 
-Extract raw text
+Raw text extraction
 
 Regex + LLM parsing
 
@@ -161,42 +160,45 @@ Broken glyphs
 
 Random character ordering
 
-OCR output was:
+OCR output:
 
 Semantically corrupted
 
 Non-linear
 
-Question numbers destroyed
+Destroyed question numbering
 
-Even advanced regex + LLM:
+Regex + LLM:
 
 Extracted only 1–2 questions
 
-Missed hierarchy (Q1 a/b OR blocks)
+Missed OR blocks and hierarchy
 
 ⚠️ Root cause:
 OCR ≠ semantic document understanding.
 
 ➡️ Decision: Stop investing time here.
 
-✅ FINAL SOLUTION — GEMINI VISION (ADOPTED)
-🔥 New Strategy (Successful)
+✅ FINAL SOLUTION — GEMINI VISION (ADOPTED & VERIFIED)
+
+🔥 New Strategy
 
 PDF → Gemini 2.5 Flash Vision → Structured Questions
 
+
 No OCR.
 No regex guessing.
-No text corruption.
+No corrupted text.
 
 New Script Introduced
+
 pyq_pipeline/parse_pyq_vision.py
 
-What it does:
+Capabilities:
 
 Sends raw PDF bytes to Gemini Vision
 
-Gemini understands:
+Model understands:
 
 Layout
 
@@ -206,180 +208,150 @@ OR blocks
 
 Marks
 
-Returns clean JSON directly
+Output:
+
+Clean structured JSON
+
+Confidence scores
+
+Module inference
 
 Verified Results:
 
-14/14 questions extracted correctly
+14 / 14 questions extracted correctly
 
 Marks accurate
 
 OR questions preserved
 
-Modules inferred correctly
+Manual verification passed
 
-Confidence scores assigned
+✔️ This fully solved extraction.
 
-✔️ This finally solved the problem.
-
-🗃️ DATA FLOW (NEW)
-Where questions go:
-
-Output JSON:
-
+🗃️ DATA FLOW — UPDATED & COMPLETED
+Step 1 — Vision Output
 pyq_parsed/<paper>_vision.json
 
+Step 2 — Supabase Ingestion (NEW & COMPLETED)
 
-Next step (planned):
+A fully scripted ingestion pipeline was implemented.
 
-Insert into Supabase questions table
+New Script
 
-Add:
+pyq_pipeline/ingest_questions.py
 
-appeared_in (exam)
+What it does:
 
-year
+Reads all JSON files from pyq_parsed/
 
-subject_id
+Normalizes question text:
 
-scheme
+lowercase
 
-Handling repeated questions:
+punctuation removal
 
-Hash or normalized text comparison
+whitespace collapse
 
-Same question → multiple appeared_in rows
+Generates SHA-256 hash for canonical deduplication
 
-Enables:
+Inserts into questions table (one canonical row per unique question)
 
-Frequency analysis
+Inserts into question_appearances table (one row per exam occurrence)
 
-“Most asked questions”
+Extracts:
 
-Predictive weightage
+year from appeared_in
 
-🕒 WHAT WE DELIBERATELY DEFERRED
-Deferred Item	Reason
-Sub-topic granularity	Need PYQ frequency first
-Question difficulty scoring	Needs historical data
-AI answer generation	Depends on clean question DB
-PYQ-based recommendations	Needs 5–6 papers per subject
-Vision batch automation	Will add after Supabase insert
-🧠 KEY ARCHITECTURAL CHANGES (SUMMARY)
-❌ Removed / Deprecated
+confidence from Vision output
 
-OCR-heavy pipelines
+Idempotent (safe to re-run)
 
-Regex-only parsing
+🗄️ FINAL PYQ DATABASE SCHEMA (LIVE)
+questions (canonical questions)
+Column	Purpose
+id	UUID
+question_text	Canonical text
+marks	2 / 5 / 10
+topic_id	Nullable
+normalized_hash	Deduplication
+created_at	Timestamp
+question_appearances (history & frequency)
+Column	Purpose
+question_id	FK → questions
+appeared_in	Exam name
+year	Extracted
+subject_id	FK
+scheme_id	TEXT (2019 etc.)
+confidence	Vision confidence
+created_at	Timestamp
 
-Large single-prompt LLM parsing
+✅ Single shared questions table across all subjects
+✅ Subject/scheme separation handled via appearances
+✅ Enables frequency analytics & prediction
 
-✅ Added
+📊 INGESTION RESULTS (VERIFIED)
 
-Gemini 2.5 Flash Vision
+Papers ingested: 2 (AI Dec 2022, AI May 2025)
 
-Direct PDF semantic parsing
+Canonical questions: 28
 
-Deterministic structured output
+Question appearances: 29
 
-Clean separation:
+One concept repeated with different wording → correctly stored as separate questions
 
-Vision for ingestion
+✔️ Behavior confirmed correct
+✔️ Semantic merging deferred to predictor logic (Person B)
 
-LLMs later for reasoning
-
-🟢 CURRENT STATE (IMPORTANT)
-
-Foundation: Stable
-
-Auto-Scout: Frozen & reliable
-
-PYQ ingestion: Solved correctly
-
-Next real step:
-👉 Store extracted questions in Supabase and link them to subjects/topics
-
-You’re now past the hardest technical uncertainty of the entire system.
-
-What Is Officially DONE (Locked-In Progress)
-🔹 PYQ Pipeline (Major Milestone Achieved)
-
-✅ Gemini 2.5 Flash Vision–based PYQ extraction
-
-✅ Direct PDF → structured JSON (no OCR dependency)
-
-✅ Handles:
-
-Printed MU PDFs
-
-Watermarks
-
-Complex layouts
-
-Sub-questions (a/b/c)
-
-OR blocks
-
-✅ Extracts 100% of questions (verified: 14/14)
-
-✅ Output saved in pyq_parsed/ (ready for DB ingestion)
-
-🔹 OCR Pipeline (Correctly Downgraded to Fallback)
+🔹 OCR PIPELINE — CORRECTLY DOWNGRADED
 
 Moved to ocr_fallback/
 
-Preserved for:
+Preserved only for:
 
 Handwritten scans
 
 Extremely poor PDFs
 
-No longer blocks progress or pollutes main pipeline
+No longer blocks progress
 
-🔹 Repository Hygiene
+🕒 WHAT WE DELIBERATELY DEFERRED (UNCHANGED)
+Deferred Item	Reason
+Sub-topic granularity	Needs PYQ frequency first
+Question difficulty scoring	Needs historical data
+AI answer generation	Depends on clean DB
+PYQ-based recommendations	Needs 5–6 papers
+Vision batch automation	After DB scale
+🧠 KEY ARCHITECTURAL DECISIONS (REINFORCED)
 
-.gitignore fixed
+❌ Removed:
 
-Virtual environments excluded
+OCR-heavy pipelines
 
-Experimental artifacts isolated
+Regex-only parsing
 
-Vision pipeline is now the default & recommended path
+Text-based PDF assumptions
 
-🧠 Architectural Decision (Very Important)
+✅ Added:
 
-You made the right call switching to Vision.
+Vision-based semantic parsing
 
-Why this matters:
+Canonical + appearance separation
 
-OCR + regex + LLM is fragile and time-expensive
+Idempotent ingestion
 
-Vision models understand layout + semantics
+Future-proof analytics base
 
-This unlocks:
+🟢 CURRENT STATE (FINAL)
 
-Faster onboarding of new papers
+Foundation: Stable
 
-Better accuracy
+Auto-Scout: Frozen & reliable
 
-Less maintenance
+PYQ extraction: Solved
 
-Easier future automation
+PYQ ingestion: Live in Supabase
 
-This is a production-grade decision, not a shortcut.
+Data integrity: Verified
 
-⏸️ Explicitly Deferred (Intentionally)
-
-These are not failures, they’re smart deferrals:
-
-🔜 Automated duplicate-question detection across years
-
-🔜 Question frequency analytics
-
-🔜 Linking questions → syllabus topics automatically
-
-🔜 PYQ-based recommendation engine
-
-🔜 Student-facing PYQ UI
-
-All of these now become easy because the hard part (clean data) is solved.
+👉 Person C responsibilities for Phase 3 are complete.
+The system is now ready for Person B — prediction, ranking, and intelligence layers.

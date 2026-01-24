@@ -16,3 +16,8 @@ pyq_parsed/
 __pycache__/
 
 *_vision.json
+
+# Local answer generation test outputs
+mu-cortex-backend/answer_test_10_mark.txt
+mu-cortex-backend/answer_test_5_mark.txt
+mu-cortex-backend/answer_test_transcript.txt

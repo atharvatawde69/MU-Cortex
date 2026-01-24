@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, subjects, topics, videos
+from app.routers import answers, auth, subjects, topics, videos
 
 app = FastAPI(title="MU Cortex Backend", version="0.1.0")
 
@@ -20,6 +20,7 @@ app.include_router(auth.router)
 app.include_router(subjects.router)
 app.include_router(topics.router)
 app.include_router(videos.router)
+app.include_router(answers.router)
 
 
 @app.get("/health")
