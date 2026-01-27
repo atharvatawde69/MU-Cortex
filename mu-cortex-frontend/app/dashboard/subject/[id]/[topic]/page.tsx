@@ -6,6 +6,7 @@ import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import NotesList from "@/components/NotesList"
 
 type SchemeSelection = {
   scheme: string
@@ -61,14 +62,17 @@ function getThumbnailUrl(youtubeUrl: string): string {
   if (!videoId) {
     return "/placeholder-thumbnail.jpg" // Fallback
   }
-  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
 }
+
+type TabType = "videos" | "notes"
 
 export default function TopicVideosPage() {
   const params = useParams()
   const topic_id = params.topic as string
   const subject_id = params.id as string
 
+  const [activeTab, setActiveTab] = useState<TabType>("videos")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<VideosResponse | null>(null)
@@ -182,68 +186,119 @@ export default function TopicVideosPage() {
     fetchVideos(trimmedQuery || null)
   }
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-64 animate-pulse rounded-md bg-muted" />
-            <div className="h-6 w-16 animate-pulse rounded-full bg-muted" />
-          </div>
-          <div className="h-4 w-48 animate-pulse rounded-md bg-muted" />
-        </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card
-              key={i}
-              className="animate-pulse overflow-hidden"
-              style={{
-                animationDelay: `${i * 100}ms`,
-              }}
-            >
-              <div className="relative aspect-video w-full bg-muted" />
-              <CardHeader className="gap-2">
-                <div className="h-5 w-full rounded-md bg-muted" />
-                <div className="h-4 w-2/3 rounded-md bg-muted" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-4 w-1/2 rounded-md bg-muted" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  // Render tab content
+  const renderTabContent = () => {
+    if (activeTab === "notes") {
+      return <NotesList subjectId={subject_id} />
+    }
 
-  if (error) {
+    // Videos tab (default)
+    if (loading) {
+      return (
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-64 animate-pulse rounded-md bg-muted" />
+              <div className="h-6 w-16 animate-pulse rounded-full bg-muted" />
+            </div>
+            <div className="h-4 w-48 animate-pulse rounded-md bg-muted" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card
+                key={i}
+                className="animate-pulse overflow-hidden"
+                style={{
+                  animationDelay: `${i * 100}ms`,
+                }}
+              >
+                <div className="relative aspect-video w-full bg-muted" />
+                <CardHeader className="gap-2">
+                  <div className="h-5 w-full rounded-md bg-muted" />
+                  <div className="h-4 w-2/3 rounded-md bg-muted" />
+                </CardHeader>
+                <CardContent>
+                  <div className="h-4 w-1/2 rounded-md bg-muted" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    if (error) {
+      return (
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">Error</h1>
+          </div>
+          <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-8 text-center">
+            <div className="mx-auto max-w-sm space-y-3">
+              <p className="text-lg font-medium text-foreground">
+                Failed to load videos
+              </p>
+              <p className="text-sm text-muted-foreground">
+                We couldn't fetch the videos for this topic. Please try again later or check your connection.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    if (!data || !data.videos || data.videos.length === 0) {
+      return (
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">
+              {data?.topic_name || "Topic Videos"}
+            </h1>
+          </div>
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search within this topic (e.g. Banker's Algorithm example)"
+              className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+            <Button type="submit" disabled={loading}>
+              Search
+            </Button>
+          </form>
+          <div className="rounded-lg border border-dashed p-12 text-center">
+            <div className="mx-auto max-w-sm space-y-3">
+              <p className="text-lg font-medium text-foreground">
+                No videos found
+              </p>
+              <p className="text-sm text-muted-foreground">
+                We couldn't find any videos for this topic. The content may still be being processed, or there may not be any videos available yet.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    const topicName = data.topic_name || "Topic Videos"
+    const isCached = data.cached === true
+    const videoCount = data.count ?? (data as { videos_found?: number }).videos_found ?? data.videos.length
+
     return (
       <div className="space-y-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Error</h1>
-        </div>
-        <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-8 text-center">
-          <div className="mx-auto max-w-sm space-y-3">
-            <p className="text-lg font-medium text-foreground">
-              Failed to load videos
-            </p>
-            <p className="text-sm text-muted-foreground">
-              We couldn't fetch the videos for this topic. Please try again later or check your connection.
-            </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-bold">{topicName}</h1>
+            {isCached && (
+              <Badge variant="secondary">Cached</Badge>
+            )}
           </div>
+          <p className="text-sm text-muted-foreground">
+            {videoCount} video{videoCount !== 1 ? "s" : ""} available
+          </p>
         </div>
-      </div>
-    )
-  }
 
-  if (!data || !data.videos || data.videos.length === 0) {
-    return (
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">
-            {data?.topic_name || "Topic Videos"}
-          </h1>
-        </div>
         <form onSubmit={handleSearch} className="flex gap-2">
           <input
             type="text"
@@ -256,100 +311,85 @@ export default function TopicVideosPage() {
             Search
           </Button>
         </form>
-        <div className="rounded-lg border border-dashed p-12 text-center">
-          <div className="mx-auto max-w-sm space-y-3">
-            <p className="text-lg font-medium text-foreground">
-              No videos found
-            </p>
-            <p className="text-sm text-muted-foreground">
-              We couldn't find any videos for this topic. The content may still be being processed, or there may not be any videos available yet.
-            </p>
-          </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {data.videos.map((video, index) => {
+            const thumbnailUrl = getThumbnailUrl(video.youtube_url)
+
+            return (
+              <Card
+                key={index}
+                className="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
+                onClick={() => {
+                  window.open(video.youtube_url, "_blank", "noopener,noreferrer")
+                }}
+              >
+                <div className="relative aspect-video w-full bg-muted">
+                  <Image
+                    src={thumbnailUrl}
+                    alt={video.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
+                <CardHeader className="gap-1">
+                  <CardTitle className="line-clamp-2 text-base font-semibold">
+                    {video.title}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">{video.channel}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1 text-sm">
+                    <div className="text-muted-foreground">
+                      Popularity:{" "}
+                      <span className="font-medium text-foreground">
+                        {video.engagement_score.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       </div>
     )
   }
 
-  const topicName = data.topic_name || "Topic Videos"
-  const isCached = data.cached === true
-  const videoCount = data.count ?? (data as { videos_found?: number }).videos_found ?? data.videos.length
-
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-3xl font-bold">{topicName}</h1>
-          {isCached && (
-            <Badge variant="secondary">Cached</Badge>
-          )}
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {videoCount} video{videoCount !== 1 ? "s" : ""} available
+      {/* Tab Navigation */}
+      <div className="border-b">
+        <nav className="-mb-px flex gap-2">
+          <button
+            onClick={() => setActiveTab("videos")}
+            className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === "videos"
+                ? "border-b-2 border-primary bg-background text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
+          >
+            Videos
+          </button>
+          <button
+            onClick={() => setActiveTab("notes")}
+            className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === "notes"
+                ? "border-b-2 border-primary bg-background text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
+          >
+            Notes
+          </button>
+        </nav>
+        <p className="text-xs text-muted-foreground mt-2">
+          Questions are organized at the subject level.
         </p>
       </div>
 
-      <form onSubmit={handleSearch} className="flex gap-2">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search within this topic (e.g. Banker's Algorithm example)"
-          className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        />
-        <Button type="submit" disabled={loading}>
-          Search
-        </Button>
-      </form>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data.videos.map((video, index) => {
-          const thumbnailUrl = getThumbnailUrl(video.youtube_url)
-
-          return (
-            <Card
-              key={index}
-              className="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
-              onClick={() => {
-                window.open(video.youtube_url, "_blank", "noopener,noreferrer")
-              }}
-            >
-              <div className="relative aspect-video w-full bg-muted">
-                <Image
-                  src={thumbnailUrl}
-                  alt={video.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  onError={(e) => {
-                    // Fallback to hqdefault if maxresdefault fails
-                    const videoId = extractVideoId(video.youtube_url)
-                    if (videoId) {
-                      const target = e.target as HTMLImageElement
-                      target.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-                    }
-                  }}
-                />
-              </div>
-              <CardHeader className="gap-1">
-                <CardTitle className="line-clamp-2 text-base font-semibold">
-                  {video.title}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">{video.channel}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1 text-sm">
-                  <div className="text-muted-foreground">
-                    Popularity:{" "}
-                    <span className="font-medium text-foreground">
-                      {video.engagement_score.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+      {/* Tab Content */}
+      <div>{renderTabContent()}</div>
     </div>
   )
 }

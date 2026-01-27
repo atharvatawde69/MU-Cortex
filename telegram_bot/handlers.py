@@ -75,6 +75,9 @@ class FileProcessor:
             f"/{message.message_id}"
         )
 
+        # TODO: Manual moderation required before frontend visibility
+        # moderated_at and moderated_by remain NULL on upload
+        # Admin must manually approve notes before they appear in the frontend
         data = {
             "subject_id": subject_id,
             "scheme_id": scheme_id,
@@ -85,6 +88,8 @@ class FileProcessor:
             "telegram_message_link": message_link,
             "tags": tags,
             "uploaded_at": datetime.utcnow().isoformat(),
+            # moderated_at and moderated_by are intentionally NOT set here
+            # They remain NULL until manually approved by admin
         }
 
         result = (

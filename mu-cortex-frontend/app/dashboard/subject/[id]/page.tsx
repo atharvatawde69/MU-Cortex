@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import QuestionsList from "@/components/QuestionsList"
 
 type SchemeSelection = {
   scheme: string
@@ -34,6 +35,7 @@ export default function SubjectTopicsPage() {
   const router = useRouter()
   const subject_id = params.id as string
 
+  const [activeTab, setActiveTab] = useState<'topics' | 'questions'>('topics')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<TopicsResponse | null>(null)
@@ -89,13 +91,40 @@ export default function SubjectTopicsPage() {
     }
   }, [subject_id])
 
-  if (loading) {
+  if (loading && activeTab === "topics") {
     return (
       <div className="space-y-6">
         <div className="space-y-3">
           <div className="h-8 w-64 animate-pulse rounded-md bg-muted" />
           <div className="h-4 w-48 animate-pulse rounded-md bg-muted" />
         </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b">
+          <nav className="-mb-px flex gap-2">
+            <button
+              onClick={() => setActiveTab("topics")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "topics"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Topics
+            </button>
+            <button
+              onClick={() => setActiveTab("questions")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "questions"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Questions
+            </button>
+          </nav>
+        </div>
+
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse">
@@ -122,12 +151,78 @@ export default function SubjectTopicsPage() {
     )
   }
 
-  if (error) {
+  if (loading && activeTab === "questions") {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <div className="h-8 w-64 animate-pulse rounded-md bg-muted" />
+          <div className="h-4 w-48 animate-pulse rounded-md bg-muted" />
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b">
+          <nav className="-mb-px flex gap-2">
+            <button
+              onClick={() => setActiveTab("topics")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "topics"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Topics
+            </button>
+            <button
+              onClick={() => setActiveTab("questions")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "questions"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Questions
+            </button>
+          </nav>
+        </div>
+
+        <QuestionsList subjectId={subject_id} />
+      </div>
+    )
+  }
+
+  if (error && activeTab === "topics") {
     return (
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Error</h1>
         </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b">
+          <nav className="-mb-px flex gap-2">
+            <button
+              onClick={() => setActiveTab("topics")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "topics"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Topics
+            </button>
+            <button
+              onClick={() => setActiveTab("questions")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "questions"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Questions
+            </button>
+          </nav>
+        </div>
+
         <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-8 text-center">
           <div className="mx-auto max-w-sm space-y-3">
             <p className="text-lg font-medium text-foreground">
@@ -148,7 +243,45 @@ export default function SubjectTopicsPage() {
     )
   }
 
-  if (!data || data.modules.length === 0) {
+  if (error && activeTab === "questions") {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold">Error</h1>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b">
+          <nav className="-mb-px flex gap-2">
+            <button
+              onClick={() => setActiveTab("topics")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "topics"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Topics
+            </button>
+            <button
+              onClick={() => setActiveTab("questions")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "questions"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Questions
+            </button>
+          </nav>
+        </div>
+
+        <QuestionsList subjectId={subject_id} />
+      </div>
+    )
+  }
+
+  if ((!data || data.modules.length === 0) && activeTab === "topics") {
     return (
       <div className="space-y-6">
         <div className="space-y-2">
@@ -156,6 +289,33 @@ export default function SubjectTopicsPage() {
             {data?.subject_name || "Subject Topics"}
           </h1>
         </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b">
+          <nav className="-mb-px flex gap-2">
+            <button
+              onClick={() => setActiveTab("topics")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "topics"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Topics
+            </button>
+            <button
+              onClick={() => setActiveTab("questions")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "questions"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Questions
+            </button>
+          </nav>
+        </div>
+
         <div className="rounded-lg border border-dashed p-12 text-center">
           <div className="mx-auto max-w-sm space-y-3">
             <p className="text-lg font-medium text-foreground">
@@ -178,6 +338,46 @@ export default function SubjectTopicsPage() {
     )
   }
 
+  if ((!data || data.modules.length === 0) && activeTab === "questions") {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold">
+            {data?.subject_name || "Subject"}
+          </h1>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b">
+          <nav className="-mb-px flex gap-2">
+            <button
+              onClick={() => setActiveTab("topics")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "topics"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Topics
+            </button>
+            <button
+              onClick={() => setActiveTab("questions")}
+              className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === "questions"
+                  ? "border-b-2 border-primary bg-background text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Questions
+            </button>
+          </nav>
+        </div>
+
+        <QuestionsList subjectId={subject_id} />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -188,7 +388,37 @@ export default function SubjectTopicsPage() {
         </p>
       </div>
 
-      <div className="space-y-4">
+      {/* Tab Navigation */}
+      <div className="border-b">
+        <nav className="-mb-px flex gap-2">
+          <button
+            onClick={() => setActiveTab("topics")}
+            className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === "topics"
+                ? "border-b-2 border-primary bg-background text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
+          >
+            Topics
+          </button>
+          <button
+            onClick={() => setActiveTab("questions")}
+            className={`rounded-t-md px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === "questions"
+                ? "border-b-2 border-primary bg-background text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
+          >
+            Questions
+          </button>
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "questions" ? (
+        <QuestionsList subjectId={subject_id} />
+      ) : (
+        <div className="space-y-4">
         {data.modules.map((module) => (
           <Card key={module.module_number}>
             <CardHeader>
@@ -227,7 +457,8 @@ export default function SubjectTopicsPage() {
             </CardContent>
           </Card>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,47 +1,55 @@
-📘 MU-Cortex — Current Project Status (Updated)
+📘 MU-Cortex — Current Project Status
+Final, Consolidated (Authoritative)
 
-This update extends the previous status and documents the successful Supabase ingestion pipeline, schema corrections, and data-integrity guarantees added after Gemini Vision extraction.
+This document captures the complete end-to-end status of the MU-Cortex project, including architectural decisions, abandoned approaches, validated pipelines, completed AI layers, and frontend integration work.
 
-🧱 PHASE 1 — FOUNDATION (SCHEME BRAIN) ✅ (Unchanged, Stable)
+All information reflects the current live system state.
+
+🧱 PHASE 1 — FOUNDATION (SCHEME BRAIN) ✅
+
+Status: Stable & Frozen
 
 🎯 Goal
-Create a reliable academic backbone before adding AI.
+
+Build a reliable academic backbone before introducing AI or prediction logic.
 
 🗄️ Database (Supabase) — Stable
 
-Finalized schema (live):
+Finalized Schema (Live)
 
 users — scheme-locked students
 
-subjects — scheme + semester + branch scoped
+subjects — scoped by scheme + semester + branch
 
-topics — module-level granularity
+topics — module-level granularity only
 
 video_resources — cached YouTube results
 
 channel_whitelist — trusted channel bias list
 
-Key decisions (still valid):
+Key Architectural Decisions
 
-Scheme isolation enforced at DB + API
+Scheme isolation enforced at database + API level
 
-UUID-based routing
+UUID-based routing everywhere
 
-RLS policies added incrementally & tested
+RLS policies added incrementally and tested
 
-➡️ No changes here after this phase.
+No cross-scheme data leakage possible
+
+➡️ Database layer frozen after this phase.
 
 🔧 Backend (FastAPI) — Stable
 
-Completed APIs:
+Completed APIs
 
 Endpoint	Purpose	Status
-/health	Server check	✅
+/health	Server health check	✅
 /subjects	Fetch subjects	✅
-/topics	Module-wise topics	✅
+/topics	Fetch topics by subject	✅
 /videos	Ranked YouTube videos	✅
 
-Stability guarantees:
+Stability Guarantees
 
 Input validation
 
@@ -51,13 +59,13 @@ No crashes on bad UUIDs
 
 Clean response contracts
 
-➡️ Frozen intentionally.
+➡️ Backend foundation intentionally frozen.
 
 🖥️ Frontend (Next.js App Router) — Stable
 
-Completed flows:
+Completed Core Flows
 
-Scheme lock + reset
+Scheme lock & reset
 
 Scheme persistence
 
@@ -65,17 +73,22 @@ Dashboard routing
 
 Clean logout
 
-Routes stabilized:
+Stabilized Routes
 
 / → Landing
+
 /dashboard → Subjects
-/dashboard/subject/[id] → Topics
-/dashboard/subject/[id]/[topic] → Videos
 
+/dashboard/subject/[id] → Subject view
 
-➡️ Frontend remains render-only. No AI logic added.
+/dashboard/subject/[id]/[topic] → Topic (Videos / Notes)
 
-🤖 PHASE 2 — AUTO-SCOUT (CORE VALUE) ✅ (Completed & Frozen)
+➡️ Frontend initially render-only at this phase.
+
+🤖 PHASE 2 — AUTO-SCOUT (CORE VALUE) ✅
+
+Status: Completed & Frozen
+
 🔹 PERSON D — YouTube Foundation
 
 YouTube API v3 enabled
@@ -84,13 +97,13 @@ Quota-aware usage
 
 Stats endpoint integrated
 
-Whitelist with soft bias
+Channel whitelist with soft bias
 
 🔹 PERSON B — Scout Agent (Frozen by Design)
 
-What it does:
+Capabilities
 
-Topic-aware search
+Topic-aware YouTube search
 
 ~20 candidates per query
 
@@ -104,7 +117,7 @@ Soft whitelist bias
 
 ➡️ Logic intentionally locked to avoid instability.
 
-🔹 PERSON A — Frontend UX
+🔹 PERSON A — Frontend UX (Phase 2)
 
 Subjects dashboard
 
@@ -123,24 +136,24 @@ Skeleton loaders
 Error states
 
 🔄 END-TO-END FLOW — VERIFIED
-Landing
- → Scheme Lock
- → Subjects
- → Topics (Modules)
- → Videos (Auto search)
- → Optional sub-topic prompt
- → Ranked + cached results
 
+Landing
+→ Scheme Lock
+→ Subjects
+→ Topics (Modules)
+→ Videos (Auto search)
+→ Optional sub-topic prompt
+→ Ranked + cached results
 
 ✔️ Fully tested locally.
 
-🧠 PHASE 3 — PYQ INGESTION (MAJOR CHANGES + COMPLETED CORE)
+🧠 PHASE 3 — PYQ INGESTION (MAJOR ARCHITECTURAL PIVOT) ✅
 
-This phase went through two iterations, with a major architectural pivot.
+Status: Core Completed & Verified
 
 ❌ INITIAL APPROACH (ABANDONED)
 
-Attempted pipeline:
+Attempted Pipeline
 
 PDF → pdfplumber
 
@@ -150,7 +163,7 @@ Raw text extraction
 
 Regex + LLM parsing
 
-Problems encountered:
+Problems Encountered
 
 MU PDFs contain:
 
@@ -174,27 +187,29 @@ Extracted only 1–2 questions
 
 Missed OR blocks and hierarchy
 
-⚠️ Root cause:
+⚠️ Root Cause:
 OCR ≠ semantic document understanding.
 
-➡️ Decision: Stop investing time here.
+➡️ Approach fully abandoned.
 
 ✅ FINAL SOLUTION — GEMINI VISION (ADOPTED & VERIFIED)
 
-🔥 New Strategy
+Strategy
 
 PDF → Gemini 2.5 Flash Vision → Structured Questions
 
 
-No OCR.
-No regex guessing.
-No corrupted text.
+No OCR
 
-New Script Introduced
+No regex guessing
+
+No corrupted text
+
+📄 New Script Introduced
 
 pyq_pipeline/parse_pyq_vision.py
 
-Capabilities:
+Capabilities
 
 Sends raw PDF bytes to Gemini Vision
 
@@ -208,7 +223,7 @@ OR blocks
 
 Marks
 
-Output:
+Outputs
 
 Clean structured JSON
 
@@ -216,7 +231,7 @@ Confidence scores
 
 Module inference
 
-Verified Results:
+Verification
 
 14 / 14 questions extracted correctly
 
@@ -226,23 +241,20 @@ OR questions preserved
 
 Manual verification passed
 
-✔️ This fully solved extraction.
+✔️ Extraction problem fully solved.
 
-🗃️ DATA FLOW — UPDATED & COMPLETED
+🗃️ DATA FLOW — COMPLETED
 Step 1 — Vision Output
+
 pyq_parsed/<paper>_vision.json
 
-Step 2 — Supabase Ingestion (NEW & COMPLETED)
-
-A fully scripted ingestion pipeline was implemented.
-
-New Script
+Step 2 — Supabase Ingestion
 
 pyq_pipeline/ingest_questions.py
 
-What it does:
+What it does
 
-Reads all JSON files from pyq_parsed/
+Reads all JSON files
 
 Normalizes question text:
 
@@ -254,20 +266,22 @@ whitespace collapse
 
 Generates SHA-256 hash for canonical deduplication
 
-Inserts into questions table (one canonical row per unique question)
+Inserts into:
 
-Inserts into question_appearances table (one row per exam occurrence)
+questions (canonical)
+
+question_appearances (history)
 
 Extracts:
 
-year from appeared_in
+year
 
-confidence from Vision output
+confidence
 
-Idempotent (safe to re-run)
+Fully idempotent
 
 🗄️ FINAL PYQ DATABASE SCHEMA (LIVE)
-questions (canonical questions)
+questions (Canonical)
 Column	Purpose
 id	UUID
 question_text	Canonical text
@@ -275,83 +289,265 @@ marks	2 / 5 / 10
 topic_id	Nullable
 normalized_hash	Deduplication
 created_at	Timestamp
-question_appearances (history & frequency)
+question_appearances (History)
 Column	Purpose
 question_id	FK → questions
 appeared_in	Exam name
 year	Extracted
 subject_id	FK
-scheme_id	TEXT (2019 etc.)
+scheme_id	TEXT
 confidence	Vision confidence
 created_at	Timestamp
 
-✅ Single shared questions table across all subjects
-✅ Subject/scheme separation handled via appearances
+✅ Single shared canonical table
+✅ Subject/scheme separation via appearances
 ✅ Enables frequency analytics & prediction
 
 📊 INGESTION RESULTS (VERIFIED)
 
-Papers ingested: 2 (AI Dec 2022, AI May 2025)
+Papers ingested: 2
+
+AI Dec 2022
+
+AI May 2025
 
 Canonical questions: 28
 
 Question appearances: 29
 
-One concept repeated with different wording → correctly stored as separate questions
+Reworded concepts stored separately (correct)
 
-✔️ Behavior confirmed correct
-✔️ Semantic merging deferred to predictor logic (Person B)
+✔️ Semantic merging deferred to prediction layer.
 
-🔹 OCR PIPELINE — CORRECTLY DOWNGRADED
+🔹 OCR PIPELINE — DOWNGRADED
 
 Moved to ocr_fallback/
-
 Preserved only for:
 
 Handwritten scans
 
 Extremely poor PDFs
 
-No longer blocks progress
+➡️ No longer blocks progress.
 
-🕒 WHAT WE DELIBERATELY DEFERRED (UNCHANGED)
-Deferred Item	Reason
-Sub-topic granularity	Needs PYQ frequency first
-Question difficulty scoring	Needs historical data
-AI answer generation	Depends on clean DB
-PYQ-based recommendations	Needs 5–6 papers
-Vision batch automation	After DB scale
-🧠 KEY ARCHITECTURAL DECISIONS (REINFORCED)
+🧠 PHASE 3 — PERSON B: ANSWER ENGINE ✅
 
-❌ Removed:
+Status: Completed & Stable
 
-OCR-heavy pipelines
+🔹 Core Capabilities
 
-Regex-only parsing
+Gemini 2.5 Flash integrated
 
-Text-based PDF assumptions
+Async-safe runtime
 
-✅ Added:
+Clean venv-based execution
 
-Vision-based semantic parsing
+No impact on frozen systems
 
-Canonical + appearance separation
+✍️ MU-Style Prompt System
 
-Idempotent ingestion
+Dedicated prompt module
 
-Future-proof analytics base
+10-Mark Answers
 
-🟢 CURRENT STATE (FINAL)
+Introduction
+
+10–15 bullet points
+
+Mandatory diagram
+
+Mandatory example
+
+Conclusion
+
+Expanded keyword coverage
+
+Real-world examples added separately
+
+5-Mark Answers
+
+Definition
+
+5–7 key points
+
+Example or diagram
+
+Expanded word count
+
+Quality Controls
+
+Examiner-aligned phrasing
+
+Bullet-first (Bharat-friendly)
+
+Tables for comparison questions
+
+Symbols ($, →, ∧) removed or rewritten in plain language
+
+🌐 Answer Generation API
+Endpoint	Purpose	Status
+/answers/generate	MU-style answer generation	✅
+
+Features
+
+Fetches canonical question
+
+Marks-aware routing
+
+Clean error handling
+
+Optional transcript grounding
+
+🎥 Optional Context Grounding
+
+YouTube transcript integration
+
+Uses Auto-Scout ranked videos
+
+Keyword-based extraction
+
+Graceful fallback
+
+🧪 Validation
+
+Real MU PYQs tested
+
+10-mark answers → full-marks quality
+
+5-mark answers verified
+
+Transcript & non-transcript cases tested
+
+✔️ End-to-end answer pipeline stable.
+
+🖥️ PHASE 3 — PERSON A: FRONTEND INTEGRATION ✅
+
+Status: Completed & Stable
+
+🔹 Community Notes (Telegram → Supabase → UI)
+
+Notes sourced from community_resources
+
+Metadata-only (Telegram-hosted files)
+
+Subject-scoped display
+
+Tags rendered safely
+
+File size + relative time shown
+
+“Open in Telegram” deep link
+
+Moderation-Aware UI
+
+Unmoderated notes hidden from students
+
+Pending moderation shown lower (internal)
+
+Approved notes shown first
+
+🔹 Questions UI (Architectural Correction)
+
+Initial assumption (discarded):
+
+Topic-level questions
+
+Final decision (corrected):
+
+Questions moved to SUBJECT level
+
+Topic pages now show:
+
+Videos
+
+Notes only
+
+Reason
+
+MU questions span multiple subtopics
+
+Topics table is module-level only
+
+Frequency & prediction are subject-scoped
+
+🔹 Subject-Level Questions Tab
+
+Marks badges (2M / 5M / 10M)
+
+Filters:
+
+Marks
+
+High-frequency (placeholder)
+
+Sorting:
+
+Frequency
+
+Marks
+
+Result count
+
+Empty & loading states
+
+🔹 Answer UI Integration
+
+“Generate Answer” per question
+
+MU-formatted rendering:
+
+Bold keywords
+
+Diagram blocks
+
+Clean line breaks
+
+Copy to clipboard
+
+Regenerate support
+
+Safe HTML rendering
+
+PDF export stubbed
+
+🔹 UX Decisions Finalized
+
+Tabs at subject level:
+
+Topics
+
+Questions
+
+Topic pages simplified
+
+No duplicated question views
+
+Mobile-responsive
+
+🟢 CURRENT STATE — FINAL
 
 Foundation: Stable
 
-Auto-Scout: Frozen & reliable
+Auto-Scout: Frozen
 
 PYQ extraction: Solved
 
-PYQ ingestion: Live in Supabase
+PYQ ingestion: Live
+
+Answer Engine: Completed
+
+Frontend integration: Completed
 
 Data integrity: Verified
 
-👉 Person C responsibilities for Phase 3 are complete.
-The system is now ready for Person B — prediction, ranking, and intelligence layers.
+🚀 READY FOR NEXT PHASE
+
+System is now ready for:
+
+PYQ frequency analytics
+
+Question prediction & ranking
+
+Reference book grounding
+
+Study modes & intelligence layers
