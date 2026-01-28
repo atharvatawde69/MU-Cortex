@@ -1,7 +1,7 @@
 📘 MU-Cortex — Current Project Status
 Final, Consolidated (Authoritative)
 
-This document captures the complete end-to-end status of the MU-Cortex project, including architectural decisions, abandoned approaches, validated pipelines, completed AI layers, and frontend integration work.
+This document captures the complete end-to-end status of the MU-Cortex project, including architectural decisions, abandoned approaches, validated pipelines, completed AI layers, frontend integration work, and internal tooling added to close Phase 3 properly.
 
 All information reflects the current live system state.
 
@@ -40,15 +40,12 @@ No cross-scheme data leakage possible
 ➡️ Database layer frozen after this phase.
 
 🔧 Backend (FastAPI) — Stable
-
 Completed APIs
-
 Endpoint	Purpose	Status
 /health	Server health check	✅
 /subjects	Fetch subjects	✅
 /topics	Fetch topics by subject	✅
 /videos	Ranked YouTube videos	✅
-
 Stability Guarantees
 
 Input validation
@@ -62,7 +59,6 @@ Clean response contracts
 ➡️ Backend foundation intentionally frozen.
 
 🖥️ Frontend (Next.js App Router) — Stable
-
 Completed Core Flows
 
 Scheme lock & reset
@@ -79,7 +75,7 @@ Stabilized Routes
 
 /dashboard → Subjects
 
-/dashboard/subject/[id] → Subject view
+/dashboard/subject/[id] → Subject view (Tabs)
 
 /dashboard/subject/[id]/[topic] → Topic (Videos / Notes)
 
@@ -193,11 +189,9 @@ OCR ≠ semantic document understanding.
 ➡️ Approach fully abandoned.
 
 ✅ FINAL SOLUTION — GEMINI VISION (ADOPTED & VERIFIED)
-
 Strategy
 
 PDF → Gemini 2.5 Flash Vision → Structured Questions
-
 
 No OCR
 
@@ -287,6 +281,7 @@ id	UUID
 question_text	Canonical text
 marks	2 / 5 / 10
 topic_id	Nullable
+approved	Manual review flag
 normalized_hash	Deduplication
 created_at	Timestamp
 question_appearances (History)
@@ -303,32 +298,70 @@ created_at	Timestamp
 ✅ Subject/scheme separation via appearances
 ✅ Enables frequency analytics & prediction
 
-📊 INGESTION RESULTS (VERIFIED)
+📊 INGESTION RESULTS (CURRENT)
 
-Papers ingested: 2
+Subjects covered: AI, CN
 
-AI Dec 2022
+Papers ingested: 4+ (scaling in progress)
 
-AI May 2025
+Canonical questions: 60+
 
-Canonical questions: 28
+Question appearances: 60+
 
-Question appearances: 29
+✔️ Reworded concepts stored separately (correct behavior)
+✔️ Semantic merging deferred to Phase 4
 
-Reworded concepts stored separately (correct)
+🧪 PHASE 3 — PERSON C: REVIEW & QUALITY CONTROL ✅
 
-✔️ Semantic merging deferred to prediction layer.
+(Newly Completed)
 
-🔹 OCR PIPELINE — DOWNGRADED
+🔹 PYQ Review & Approval Tool
 
-Moved to ocr_fallback/
-Preserved only for:
+Tool Added
 
-Handwritten scans
+pyq_review_app/ (Streamlit)
 
-Extremely poor PDFs
+Purpose
 
-➡️ No longer blocks progress.
+Human-in-the-loop quality gate before analytics & prediction
+
+Capabilities
+
+Shows all questions by default (cross-subject)
+
+Optional filter by subject_id
+
+Live metrics:
+
+Total questions
+
+Unapproved questions
+
+Visible after filters
+
+Actions:
+
+Approve single question
+
+Reject & delete
+
+Approve all visible (batch)
+
+Performance Improvements
+
+Session-state caching (no re-fetch on every action)
+
+Optimistic UI updates
+
+Dynamic counts update instantly
+
+No buffering after approval
+
+Outcome
+
+Person C is now a reviewer, not a data-entry operator
+
+Data quality guaranteed before prediction layers
 
 🧠 PHASE 3 — PERSON B: ANSWER ENGINE ✅
 
@@ -356,19 +389,17 @@ Introduction
 
 Mandatory diagram
 
-Mandatory example
+Mandatory real-world example (separate section)
 
 Conclusion
 
 Expanded keyword coverage
 
-Real-world examples added separately
-
 5-Mark Answers
 
 Definition
 
-5–7 key points
+5–7 bullet points
 
 Example or diagram
 
@@ -380,9 +411,9 @@ Examiner-aligned phrasing
 
 Bullet-first (Bharat-friendly)
 
-Tables for comparison questions
+Tables for compare/differentiate questions
 
-Symbols ($, →, ∧) removed or rewritten in plain language
+Logical symbols rewritten into plain English
 
 🌐 Answer Generation API
 Endpoint	Purpose	Status
@@ -406,7 +437,7 @@ Uses Auto-Scout ranked videos
 
 Keyword-based extraction
 
-Graceful fallback
+Graceful fallback (never blocks answers)
 
 🧪 Validation
 
@@ -434,7 +465,7 @@ Subject-scoped display
 
 Tags rendered safely
 
-File size + relative time shown
+File size + relative time
 
 “Open in Telegram” deep link
 
@@ -442,25 +473,17 @@ Moderation-Aware UI
 
 Unmoderated notes hidden from students
 
-Pending moderation shown lower (internal)
+Pending moderation visible internally
 
 Approved notes shown first
 
 🔹 Questions UI (Architectural Correction)
 
 Initial assumption (discarded):
-
 Topic-level questions
 
-Final decision (corrected):
-
-Questions moved to SUBJECT level
-
-Topic pages now show:
-
-Videos
-
-Notes only
+Final decision (locked):
+Questions are subject-level
 
 Reason
 
@@ -532,7 +555,9 @@ Auto-Scout: Frozen
 
 PYQ extraction: Solved
 
-PYQ ingestion: Live
+PYQ ingestion: Live & scaling
+
+Review tooling: Live
 
 Answer Engine: Completed
 
@@ -545,6 +570,8 @@ Data integrity: Verified
 System is now ready for:
 
 PYQ frequency analytics
+
+Semantic clustering
 
 Question prediction & ranking
 

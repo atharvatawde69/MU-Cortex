@@ -1,74 +1,96 @@
-Here is a clean, accurate status update for PERSON C, adjusted to the new Vision-based approach, and explicitly stating what is done, skipped, and still pending — without violating deliverables.
+✅ PERSON C — CURRENT STATUS (FINAL, PHASE 3)
 
-✅ PERSON C — CURRENT STATUS (UPDATED)
+This status reflects the final executed scope for Phase 3, after the Vision pivot, Supabase ingestion, and review tooling.
+
 🔹 TASK C1: Collect Sample PYQ PDFs
 
 Status: ✅ COMPLETED
 
-Collected multiple real MU PYQ PDFs
+What was done
+
+Collected real, official MU PYQ PDFs
 
 Focused on:
 
-AIML Sem 5
+AI / AIML (Sem 5)
 
-AI & CN
+Computer Networks
 
 2019 (C) Scheme
 
-PDFs verified manually:
+PDFs manually verified for:
 
-Clear questions
+Proper MU formatting
 
-Proper marks (5/10)
+Clear question hierarchy
 
-Official MU format
+Correct marks distribution (5M / 10M)
 
-✔️ Deliverable satisfied.
+✔️ Deliverable fully satisfied
+✔️ Dataset is representative and exam-accurate
 
 🔹 TASK C2: PDF Text Extraction
 
-Status: ⚠️ PARTIALLY COMPLETED → FUNCTIONALLY SKIPPED
+Status: ⚠️ ATTEMPTED → STRATEGICALLY ABANDONED
 
-What was done:
+What was implemented
 
-Built OCR + pdfplumber pipeline
+OCR + pdfplumber pipeline
 
-Tested multiple configurations (tesseract, preprocessing, heuristics)
+Multiple preprocessing experiments
 
-Verified that OCR output is too noisy for reliable parsing on MU PDFs
+Tesseract tuning and heuristics
 
-Strategic decision:
+Outcome
+
+OCR output:
+
+Semantically broken
+
+Non-linear
+
+Destroys question numbering and OR blocks
+
+Decision
 
 OCR pipeline moved to ocr_fallback/
 
-Retained only as backup for handwritten / extreme cases
+Retained only for:
 
-Why this is acceptable:
+Handwritten scans
 
-Deliverable goal was “enable extraction”, not mandate OCR
+Extremely poor PDFs
 
-Vision-based extraction replaces and outperforms OCR
+Why this is acceptable
 
-✔️ Deliverable satisfied via better alternative
-❌ OCR is not the primary path
+Deliverable goal was “enable extraction”, not “use OCR”
+
+OCR replaced by superior Vision-based extraction
+
+✔️ Deliverable satisfied via stronger approach
+❌ OCR is not part of the main pipeline
 
 🔹 TASK C3: LLM-Powered Question Parsing
 
-Status: ✅ COMPLETED (WITH STRONGER APPROACH)
+Status: ✅ COMPLETED (VISION-BASED, LOCKED)
 
-Original plan:
+Original plan (discarded)
 
-OCR → raw text → LLM parsing
+PDF → OCR → Raw text → LLM → Partial questions
 
-Final implementation:
 
-❌ OCR-based parsing abandoned
+Final implementation (LOCKED)
 
-✅ Gemini 2.5 Flash Vision used directly on PDFs
+PDF → Gemini 2.5 Flash Vision → Structured questions → JSON
 
-Directly extracts:
 
-All questions
+Capabilities
+
+Direct PDF understanding (no OCR)
+
+Correctly extracts:
+
+Main questions
 
 Sub-questions
 
@@ -76,98 +98,199 @@ OR blocks
 
 Marks
 
-Topics
+Module-level topic hints
 
-Module guesses
+Confidence scores
 
-Results:
+Verification
 
-14/14 questions extracted correctly from a full paper
+14 / 14 questions extracted correctly from a full paper
 
-Output verified manually
+Marks preserved
 
-Stored as structured JSON
+OR logic preserved
 
-✔️ Core innovation achieved
-✔️ Better than original plan
+Manual verification passed
 
-🔹 TASK C4: Review & Approval Interface
+✔️ Core extraction problem fully solved
+✔️ Accuracy exceeds original expectations
+✔️ Architecture future-proofed
 
-Status: ⏸️ DEFERRED (OPTIONAL, NOT BLOCKING)
+🔹 TASK C4: Supabase Ingestion Pipeline
 
-Reason:
+Status: ✅ COMPLETED
 
-Vision output accuracy is already very high
+Script
 
-Manual review UI is nice-to-have, not required for MVP
+pyq_pipeline/ingest_questions.py
 
-Questions can be:
+What it does
 
-Inserted manually for now, OR
+Reads Vision-generated JSON
 
-Reviewed later once PYQ volume increases
+Normalizes question text
 
-✔️ Deliverable can be satisfied later without risk
-✔️ No violation of PERSON C goals
+Generates SHA-256 hash for canonical deduplication
 
-🔹 TASK C5: Batch Processing Pipeline
+Inserts into:
 
-Status: 🟡 PARTIALLY DONE
+questions (canonical)
 
-What exists:
+question_appearances (exam history)
 
-parse_pyq_vision.py works per-PDF
+Extracts:
+
+Year
+
+Subject
+
+Scheme
+
+Confidence
+
+Fully idempotent (safe re-runs)
+
+Results
+
+60+ canonical questions ingested
+
+60+ appearances across AI & CN
+
+Reworded variants stored separately (correct behavior)
+
+✔️ Database integrity guaranteed
+✔️ Ready for frequency analytics
+
+🔹 TASK C5: Review & Approval Interface
+
+Status: ✅ COMPLETED (UPGRADED FROM “OPTIONAL”)
+
+Originally marked optional — now fully implemented to close Phase 3 properly.
+
+Tool
+
+pyq_review_app/ (Streamlit)
+
+Capabilities
+
+Shows all questions by default (cross-subject)
+
+Optional filter by subject_id
+
+Live metrics:
+
+Total questions
+
+Unapproved questions
+
+Visible after filters
+
+Actions:
+
+Approve single question
+
+Reject & delete
+
+Approve all visible (batch)
+
+UX & Performance
+
+Session-state caching (no re-fetch)
+
+Optimistic UI updates
+
+Dynamic counters update instantly
+
+No buffering after actions
+
+Impact
+
+Person C is now a reviewer, not data-entry operator
+
+Data quality enforced before analytics & prediction
+
+✔️ Strong human-in-the-loop quality gate added
+✔️ Phase 3 data now production-ready
+
+🔹 TASK C6: Batch Processing
+
+Status: 🟡 PARTIALLY DONE (SUFFICIENT FOR PHASE 3)
+
+What exists
+
+parse_pyq_vision.py is:
 
 CLI-ready
 
-Repeatable for all PDFs
+Repeatable
 
-What’s optional:
+Reliable per-PDF
 
-Master batch script (process_all.py)
+What is deferred
 
-Can be added later when:
+Full batch runner (process_all.py)
 
-More subjects are onboarded
+Why acceptable
 
-Automation becomes necessary
+Manual invocation is fast enough for current scale
 
-✔️ Current tooling is sufficient
-✔️ Batch automation is a future optimization
+Automation can be added once more subjects onboard
 
-📌 FINAL DELIVERABLE CHECK (UPDATED)
+✔️ Tooling sufficient
+🟡 Automation is a future optimization
+
+📌 FINAL DELIVERABLE CHECK — PERSON C
 [✔] Real MU PYQ PDFs collected
 [✔] Reliable extraction mechanism (Vision-based)
-[✔] 80%+ extraction accuracy (actually ~100%)
-[✔] Structured JSON outputs ready for DB
-[✔] OCR retained as fallback (not blocking)
-[ ] Review UI (deferred, optional)
-[ ] Batch automation (optional, future)
+[✔] 80%+ extraction accuracy (actual ~100%)
+[✔] Structured JSON outputs
+[✔] Canonical + appearance DB ingestion
+[✔] Manual review & approval UI
+[✔] OCR retained only as fallback
+[ ] Fully automated batch runner (future)
 
-🧠 KEY CHANGE FROM INITIAL APPROACH
+🧠 KEY ARCHITECTURAL SHIFT (LOCKED)
 
-Old pipeline
+Old (abandoned)
 
-PDF → OCR → messy text → LLM → partial questions
+PDF → OCR → noisy text → fragile parsing
 
 
-Final pipeline (LOCK THIS)
+Final (authoritative)
 
 PDF → Gemini Vision → clean structured questions → JSON → Supabase
 
 
-This change:
+This shift:
 
-Saves weeks of tuning
+Eliminated OCR complexity
 
-Reduces failure points
+Preserved semantic structure
 
-Scales better
+Reduced failure points
 
-Is future-proof
+Scales cleanly
+
+Enables analytics & prediction
+
+🔮 FUTURE IMPROVEMENTS (POST-PHASE 3)
+
+Planned for Phase 4+
+
+Semantic clustering for frequency scoring
+
+Soft-matching of near-duplicate questions
+
+Topic refinement for high-frequency questions only
+
+Automated batch ingestion across subjects
+
+Confidence dashboards per paper
+
+Reviewer analytics (approval rate, extraction quality)
 
 ✅ CONCLUSION
 
-PERSON C DELIVERABLES ARE MET.
-Nothing critical is missing.
-Anything deferred is non-blocking and safe.
+PERSON C DELIVERABLES ARE FULLY MET.
+Phase 3 is not blocked by any pending work.
+All deferred items are safe optimizations, not risks
