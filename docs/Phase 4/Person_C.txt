@@ -1,0 +1,243 @@
+📘 MU-Cortex — Phase 4 Report
+Person C: Analytics & Prediction Engine
+
+Phase: 4 (Days 7–10)
+Owner: Person C
+Status: ✅ Completed
+Primary Goal: Convert historical PYQs into actionable exam intelligence (pass-focused + score-aware)
+
+🎯 Phase 4 Objective (Person C)
+
+Build a data-backed exam intelligence layer that:
+
+Identifies high-frequency / repeat questions
+
+Predicts high-probability exam questions
+
+Powers Survival Mode and Full Prep Mode
+
+Is fast, explainable, and safe (no ML black box)
+
+✅ What Was Implemented
+1️⃣ Frequency Analytics System (Supabase Views)
+
+Created a full analytics layer using read-only SQL views (zero runtime cost):
+
+Views implemented:
+
+question_frequency
+→ Base appearance counts, first/last year, exam history
+
+high_frequency_questions
+→ Filters questions with ≥2 appearances + recency-weighted score
+
+subject_question_stats
+→ Subject-level coverage & high-frequency percentage
+
+marks_distribution
+→ 2M / 5M / 10M distribution per subject
+
+question_predictions
+→ Final prediction score + study priority (must_study, should_study)
+
+Key properties:
+
+Scheme-aware (2019 / 2024 ready)
+
+Approval-respecting (approved = true only)
+
+Idempotent and safe to re-run
+
+No schema changes
+
+2️⃣ Prediction & Analytics API (/analytics)
+
+Built a read-only analytics router for downstream usage.
+
+Endpoints delivered:
+
+GET /analytics/predictions/subject/{subject_id}
+→ Ranked predictions (supports filtering)
+
+GET /analytics/stats/subject/{subject_id}
+→ Subject-level analytics summary
+
+GET /analytics/study-plan/survival/{subject_id}
+→ Time-aware survival study plan
+
+Notable fixes:
+
+Correct handling of numeric prediction_score (Supabase/PostgREST edge case)
+
+Python-side filtering for safety and correctness
+
+Outcome:
+
+Person B fully unblocked for Study Modes
+
+Frontend-ready, stable contract
+
+3️⃣ Prediction Report Generator (Offline Tool)
+
+Created an offline report generator for validation and distribution.
+
+Script: pyq_pipeline/generate_reports.py
+
+Outputs:
+
+CSV study guide (structured, analyzable)
+
+TXT summary (student-readable)
+
+Report characteristics:
+
+Includes only high-frequency questions (≥2 appearances)
+
+Shows:
+
+Total repeat-worthy questions
+
+Priority breakdown
+
+Top 15 questions by prediction score
+
+Intentionally excludes one-time questions
+
+Validated on:
+
+Artificial Intelligence (CSC503)
+
+Computer Networks (CSC501)
+
+4️⃣ Analytics & Validation Dashboard (Streamlit)
+
+Built an internal-only dashboard for prediction sanity checks.
+
+Features:
+
+Subject selector (scheme-aware)
+
+Top metrics:
+
+Total high-frequency questions
+
+Coverage %
+
+Avg prediction score
+
+Tabs:
+
+Frequency Analysis
+
+Predictions
+
+Marks Distribution
+
+CSV export for predictions
+
+Purpose:
+
+Internal validation
+
+Confidence building before student exposure
+
+Ongoing tuning reference
+
+📊 Key Outcomes & Insights
+
+High-frequency questions form a small, high-ROI subset
+(e.g., 18/79 for AI, 24/89 for CN)
+
+Repeated questions dominate exam relevance
+
+Survival Mode goal is achievable:
+
+15–20 questions → ~60–70% exam coverage
+
+System correctly favors passing under time pressure
+
+No architectural debt introduced
+
+✅ Phase 4 — Person C Checklist (Final)
+
+ Analytics views created and verified in Supabase
+
+ Prediction scoring logic implemented
+
+ Study priority classification working
+
+ Analytics API endpoints live and tested
+
+ Survival Mode data contract ready
+
+ Report generator producing CSV + TXT
+
+ Dashboard visualizing frequency & predictions
+
+ Edge cases validated (numeric filters, repeats)
+
+ No schema / scout / prompt changes
+
+Status: ✅ COMPLETE
+
+🔮 Future Improvements (Post-Phase 4)
+
+Explicitly deferred — not required for launch
+
+1️⃣ Semantic Clustering (Phase 5)
+
+Group near-duplicate questions with same intent
+
+Preserve example diversity
+
+Compute frequency at cluster level
+
+2️⃣ Time-Aware Prediction Tuning
+
+Dynamically adjust priorities based on:
+
+Days left to exam
+
+Marks distribution
+
+Better Full Prep vs Survival differentiation
+
+3️⃣ Reference Book Grounding
+
+Link predictions to:
+
+MU-recommended textbooks
+
+Page/section references
+
+4️⃣ Cross-Subject Pattern Mining
+
+Identify examiner patterns across subjects
+
+Detect “favorite question templates”
+
+5️⃣ Student Outcome Feedback Loop
+
+Track:
+
+What students studied
+
+What actually appeared
+
+Improve prediction weights over time
+
+🧾 Final Summary
+
+Phase 4 successfully transforms MU-Cortex from a PYQ system into an exam intelligence engine.
+
+Person C has:
+
+Delivered reliable analytics
+
+Enabled predictive study modes
+
+Provided internal validation tools
+
+Maintained architectural discipline
+
+👉 Ready for launch-facing features (Person B / Person A).

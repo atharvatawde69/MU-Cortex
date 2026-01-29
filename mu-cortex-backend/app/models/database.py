@@ -15,3 +15,8 @@ if not SUPABASE_SERVICE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
+
+def get_supabase_client() -> Client:
+    """Get the Supabase client instance."""
+    return supabase
+

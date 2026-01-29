@@ -40,12 +40,15 @@ No cross-scheme data leakage possible
 ➡️ Database layer frozen after this phase.
 
 🔧 Backend (FastAPI) — Stable
+
 Completed APIs
+
 Endpoint	Purpose	Status
 /health	Server health check	✅
 /subjects	Fetch subjects	✅
 /topics	Fetch topics by subject	✅
 /videos	Ranked YouTube videos	✅
+
 Stability Guarantees
 
 Input validation
@@ -59,6 +62,7 @@ Clean response contracts
 ➡️ Backend foundation intentionally frozen.
 
 🖥️ Frontend (Next.js App Router) — Stable
+
 Completed Core Flows
 
 Scheme lock & reset
@@ -161,34 +165,19 @@ Regex + LLM parsing
 
 Problems Encountered
 
-MU PDFs contain:
-
 Watermarks
 
 Broken glyphs
 
 Random character ordering
 
-OCR output:
+OCR destroyed semantic structure
 
-Semantically corrupted
-
-Non-linear
-
-Destroyed question numbering
-
-Regex + LLM:
-
-Extracted only 1–2 questions
-
-Missed OR blocks and hierarchy
-
-⚠️ Root Cause:
-OCR ≠ semantic document understanding.
-
+⚠️ Root Cause: OCR ≠ semantic document understanding
 ➡️ Approach fully abandoned.
 
 ✅ FINAL SOLUTION — GEMINI VISION (ADOPTED & VERIFIED)
+
 Strategy
 
 PDF → Gemini 2.5 Flash Vision → Structured Questions
@@ -199,353 +188,211 @@ No regex guessing
 
 No corrupted text
 
-📄 New Script Introduced
+Script Added
 
 pyq_pipeline/parse_pyq_vision.py
 
 Capabilities
 
-Sends raw PDF bytes to Gemini Vision
-
-Model understands:
-
-Layout
+Layout understanding
 
 Question hierarchy
 
 OR blocks
 
-Marks
+Marks extraction
 
-Outputs
-
-Clean structured JSON
-
-Confidence scores
-
-Module inference
-
-Verification
-
-14 / 14 questions extracted correctly
-
-Marks accurate
-
-OR questions preserved
-
-Manual verification passed
-
-✔️ Extraction problem fully solved.
+✔️ Manual verification passed.
 
 🗃️ DATA FLOW — COMPLETED
-Step 1 — Vision Output
 
+Step 1 — Vision Output
 pyq_parsed/<paper>_vision.json
 
 Step 2 — Supabase Ingestion
-
 pyq_pipeline/ingest_questions.py
 
-What it does
+Canonical normalization
 
-Reads all JSON files
+SHA-256 deduplication
 
-Normalizes question text:
+Inserts:
 
-lowercase
+questions
 
-punctuation removal
-
-whitespace collapse
-
-Generates SHA-256 hash for canonical deduplication
-
-Inserts into:
-
-questions (canonical)
-
-question_appearances (history)
-
-Extracts:
-
-year
-
-confidence
+question_appearances
 
 Fully idempotent
 
 🗄️ FINAL PYQ DATABASE SCHEMA (LIVE)
-questions (Canonical)
-Column	Purpose
-id	UUID
-question_text	Canonical text
-marks	2 / 5 / 10
-topic_id	Nullable
-approved	Manual review flag
-normalized_hash	Deduplication
-created_at	Timestamp
-question_appearances (History)
-Column	Purpose
-question_id	FK → questions
-appeared_in	Exam name
-year	Extracted
-subject_id	FK
-scheme_id	TEXT
-confidence	Vision confidence
-created_at	Timestamp
 
-✅ Single shared canonical table
-✅ Subject/scheme separation via appearances
-✅ Enables frequency analytics & prediction
+questions (Canonical)
+id, question_text, marks, topic_id, approved, normalized_hash, created_at
+
+question_appearances (History)
+question_id, appeared_in, year, subject_id, scheme_id, confidence, created_at
+
+✔️ Enables frequency analytics & prediction
 
 📊 INGESTION RESULTS (CURRENT)
 
-Subjects covered: AI, CN
-
-Papers ingested: 4+ (scaling in progress)
+Subjects: AI, CN
 
 Canonical questions: 60+
 
-Question appearances: 60+
+Appearances: 60+
 
-✔️ Reworded concepts stored separately (correct behavior)
-✔️ Semantic merging deferred to Phase 4
+✔️ Reworded concepts stored separately
+✔️ Semantic merging deferred
 
-🧪 PHASE 3 — PERSON C: REVIEW & QUALITY CONTROL ✅
+🧪 PHASE 3 — REVIEW & ANSWER ENGINE ✅
+🔹 Review Tool (Streamlit)
 
-(Newly Completed)
+Human approval gate
 
-🔹 PYQ Review & Approval Tool
+Batch approve
 
-Tool Added
+Session caching
 
-pyq_review_app/ (Streamlit)
+Performance optimized
 
-Purpose
+🔹 Answer Engine (FastAPI + Gemini)
 
-Human-in-the-loop quality gate before analytics & prediction
+MU-style formatting
 
-Capabilities
+5M / 10M aware
 
-Shows all questions by default (cross-subject)
-
-Optional filter by subject_id
-
-Live metrics:
-
-Total questions
-
-Unapproved questions
-
-Visible after filters
-
-Actions:
-
-Approve single question
-
-Reject & delete
-
-Approve all visible (batch)
-
-Performance Improvements
-
-Session-state caching (no re-fetch on every action)
-
-Optimistic UI updates
-
-Dynamic counts update instantly
-
-No buffering after approval
-
-Outcome
-
-Person C is now a reviewer, not a data-entry operator
-
-Data quality guaranteed before prediction layers
-
-🧠 PHASE 3 — PERSON B: ANSWER ENGINE ✅
-
-Status: Completed & Stable
-
-🔹 Core Capabilities
-
-Gemini 2.5 Flash integrated
-
-Async-safe runtime
-
-Clean venv-based execution
-
-No impact on frozen systems
-
-✍️ MU-Style Prompt System
-
-Dedicated prompt module
-
-10-Mark Answers
-
-Introduction
-
-10–15 bullet points
-
-Mandatory diagram
-
-Mandatory real-world example (separate section)
-
-Conclusion
-
-Expanded keyword coverage
-
-5-Mark Answers
-
-Definition
-
-5–7 bullet points
-
-Example or diagram
-
-Expanded word count
-
-Quality Controls
-
-Examiner-aligned phrasing
-
-Bullet-first (Bharat-friendly)
-
-Tables for compare/differentiate questions
-
-Logical symbols rewritten into plain English
-
-🌐 Answer Generation API
-Endpoint	Purpose	Status
-/answers/generate	MU-style answer generation	✅
-
-Features
-
-Fetches canonical question
-
-Marks-aware routing
-
-Clean error handling
+Diagram placeholders
 
 Optional transcript grounding
 
-🎥 Optional Context Grounding
+Endpoint:
+/answers/generate ✅
 
-YouTube transcript integration
+🖥️ PHASE 3 — FRONTEND INTEGRATION ✅
 
-Uses Auto-Scout ranked videos
+Community notes (Telegram-backed)
 
-Keyword-based extraction
+Subject-level questions (locked decision)
 
-Graceful fallback (never blocks answers)
+Filters, sorting, answer generation
 
-🧪 Validation
+MU-aligned rendering
 
-Real MU PYQs tested
+🧠 PHASE 4 — ANALYTICS, PREDICTION & STUDY INTELLIGENCE ✅
 
-10-mark answers → full-marks quality
+Status: Completed
 
-5-mark answers verified
+Phase 4 converts PYQ history into exam intelligence without modifying any frozen architecture.
 
-Transcript & non-transcript cases tested
+📊 FREQUENCY ANALYTICS (SUPABASE VIEWS)
 
-✔️ End-to-end answer pipeline stable.
+Views Added (Read-only):
 
-🖥️ PHASE 3 — PERSON A: FRONTEND INTEGRATION ✅
+question_frequency
 
-Status: Completed & Stable
+high_frequency_questions
 
-🔹 Community Notes (Telegram → Supabase → UI)
+subject_question_stats
 
-Notes sourced from community_resources
+marks_distribution
 
-Metadata-only (Telegram-hosted files)
+question_predictions
 
-Subject-scoped display
+Properties
 
-Tags rendered safely
+Scheme-aware (2019 / 2024 ready)
 
-File size + relative time
+Approved-only questions
 
-“Open in Telegram” deep link
+Zero runtime compute
 
-Moderation-Aware UI
+Fully explainable logic
 
-Unmoderated notes hidden from students
+🔮 PREDICTION ENGINE
 
-Pending moderation visible internally
+Signals Used
 
-Approved notes shown first
+Frequency (appearance count)
 
-🔹 Questions UI (Architectural Correction)
+Recency (last appeared year)
 
-Initial assumption (discarded):
-Topic-level questions
+Marks weight (10M > 5M > 2M)
 
-Final decision (locked):
-Questions are subject-level
+Outputs
 
-Reason
+prediction_score
 
-MU questions span multiple subtopics
+study_priority:
 
-Topics table is module-level only
+must_study
 
-Frequency & prediction are subject-scoped
+should_study
 
-🔹 Subject-Level Questions Tab
+optional
 
-Marks badges (2M / 5M / 10M)
+Designed to:
 
-Filters:
+Maximize pass probability
 
-Marks
+Support time-aware study modes
 
-High-frequency (placeholder)
+🌐 ANALYTICS API (FASTAPI)
 
-Sorting:
+Router: /analytics
 
-Frequency
+Endpoints
 
-Marks
+/analytics/predictions/subject/{id}
 
-Result count
+/analytics/stats/subject/{id}
 
-Empty & loading states
+/analytics/study-plan/survival/{id}
 
-🔹 Answer UI Integration
+✔️ Numeric filtering edge cases fixed
+✔️ Read-only, stable contract
 
-“Generate Answer” per question
+📄 REPORT GENERATION (OFFLINE)
 
-MU-formatted rendering:
+Script: pyq_pipeline/generate_reports.py
 
-Bold keywords
+Outputs
 
-Diagram blocks
+CSV study guide
 
-Clean line breaks
+TXT summary
 
-Copy to clipboard
+Behavior
 
-Regenerate support
+Includes only questions with ≥2 appearances
 
-Safe HTML rendering
+Shows top 15 high-probability questions
 
-PDF export stubbed
+Designed for survival-focused prep
 
-🔹 UX Decisions Finalized
+📊 ANALYTICS DASHBOARD (STREAMLIT)
 
-Tabs at subject level:
+File: pyq_pipeline/analytics_dashboard.py
 
-Topics
+Features
 
-Questions
+Subject selector
 
-Topic pages simplified
+Frequency analysis
 
-No duplicated question views
+Prediction charts
 
-Mobile-responsive
+Marks distribution
+
+CSV export
+
+Used for:
+
+Internal validation
+
+Confidence checking
+
+Pre-launch verification
 
 🟢 CURRENT STATE — FINAL
 
@@ -555,26 +402,28 @@ Auto-Scout: Frozen
 
 PYQ extraction: Solved
 
-PYQ ingestion: Live & scaling
+PYQ ingestion: Live
 
 Review tooling: Live
 
-Answer Engine: Completed
+Answer engine: Stable
 
-Frontend integration: Completed
+Frontend integration: Complete
 
-Data integrity: Verified
+Analytics & prediction: Complete
+
+Survival intelligence: Enabled
 
 🚀 READY FOR NEXT PHASE
 
 System is now ready for:
 
-PYQ frequency analytics
+Study Modes (Survival / Full Prep)
 
 Semantic clustering
 
-Question prediction & ranking
-
 Reference book grounding
 
-Study modes & intelligence layers
+Prediction tuning
+
+Student performance feedback loop
